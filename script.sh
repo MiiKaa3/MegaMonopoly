@@ -1,0 +1,1 @@
+alias run='py main.py'

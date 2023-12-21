@@ -1,0 +1,66 @@
+initalise player state
+initalise stock state
+
+b:
+  announce stock market news
+	update stock market
+
+a:
+	pick person to play	-> mks.turndeterminer
+	make turn decisions	-> mks.turnhandler
+  apply state changes
+	goto a; break if no more players
+
+incrememnt turn counter
+
+goto b; break if theres a winner
+
+stock market news ideas:
+general
+  - Dividend paid
+  - Crime commited -> stock down
+  - major aquistion! -> stock up
+  - aquisition falls through -> stock down
+energy specific
+  - OIL SPILL!
+  - Green tech on the rise! -> do they get government subsidiies or not?!
+tech specific
+  - new product is announced
+  - new product is a flop
+
+healthcare specific
+GLOBAL
+  - PANDEMIC HITS -> Stocks DOWN
+  - CRYPTO BOOM -> Stocks DOWN
+
+cli commands:
+  - quit  -> quit program
+  - pass  -> passes the turn
+  - aquire-> aquire [AMT] :
+            simply changes the players money count by AMT, minus or positve.
+            useful when player is buying property, or trading with other players
+  - trade -> trade [PLAYER] [AMT]:
+            change money of active player by [AMT], and of [PLAYER]'s by -[AMT]
+  - buy   -> buy [STOCK] [AMT] :
+            active player buys [AMT] units of [STOCK] at current price
+            make sure player has enough $ to buy
+  - sell  -> sell [STOCK] [AMT] :
+            active player sells [AMT] units of [STOCK] at current price
+            make sure player has enough stock to sell
+  - view  -> pretty prints the current came state
+            player - liquid cash - stocks in form (ticker: amt, market value) - net worth
+
+
+stocks
+  energy
+    Exxon Mobil   XOM
+    Chevron       CVX
+    Ampol         ALD
+  tech
+    apple         APPL
+    microsoft     MFST
+    alphabet      GOOG
+  healthcare
+    Pfizer        PFE
+    Jhonson x2    JNJ
+    CSL           CSL
