@@ -14,3 +14,7 @@ The server recieves these requests, gives them to a python backend which process
 
 ## Phase 1: Minimal Server
 I want to be able to run a server, and serve some info to my client test devices.
+
+
+## Feature Requests
+- Nikola demands sport betting
