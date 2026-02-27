@@ -5,6 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1"/>
 		<title>Mega Monopoly 5</title>
 		<link rel="icon" href="/images/favicon.ico">
+		<link rel="stylesheet" href="styles.css">
 	</head>
 	<body>
 		<h1>Dashboard</h1>
@@ -26,6 +27,13 @@
 	  		</label>
   			<button id="sendConfirm" type="button" style="margin-left: 10px;">Confirm</button>
   			<p id="sendMsg" style="margin-top: 10px;"></p>
+		</div>
+
+		<div id="newsTicker" class="panel clickable" title="Open full news">
+			<div class="panel-title">News</div>
+			<div id="newsTickerViewport" class="ticker-viewport" aria-live="polite">
+    				<div id="newsTickerInner" class="ticker-inner"></div>
+			</div>
 		</div>
 
 		<script src="/populate.js"></script>

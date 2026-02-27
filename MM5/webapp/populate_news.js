@@ -86,16 +86,16 @@ async function doTransfer() {
   }
 }
 
-function escapeHtml(str {
+function escapeHtml(str) {
   return String(str)
-   .replaceAll("&", "&amp;")
-   .replaceAll("<", "&lt;")
-   .replaceAll(">", "&gt;")
-   .replaceAll('"', "&quot;")
-   .replaceAll("'", "&a#039;");
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
-function initNewsTicker() {
+async function initNewsTicker() {
   const ticker = document.getElementById("newsTicker");
   const inner = document.getElementById("newsTickerInner");
 
@@ -103,9 +103,10 @@ function initNewsTicker() {
 
   ticker.addEventListener("click", () => {
     const u = username ? `?username=${encodeURIComponent(username)}` : "";
-    window.location.href = "/news.html";
+    window.location.href = `/news.html${u}`;
   });
 
+  // Load the latest headlines from the backend
   let headlines = [];
   try {
     const r = await fetch("/news?limit=3");
@@ -119,6 +120,11 @@ function initNewsTicker() {
 
   const items = headlines.map(h => `<span class="ticker-item">• ${escapeHtml(h)}</span>`).join("");
   inner.innerHTML = items + items;
+
+  let x = 0;
+  const speedPxPerFrame = 0.6;
+  let contentWidth = inner.scrollWidth / 2;
+
   function tick() {
     x -= speedPxPerFrame;
     if (-x >= contentWidth) x = 0;
@@ -133,21 +139,30 @@ function initNewsTicker() {
   requestAnimationFrame(tick);
 }
 
-function escapeHtml(str) {
-  return String(str)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+// Refresh ticker headlines occasionally (cheap + good UX)
+async function refreshTickerHeadlines() {
+  const inner = document.getElementById("newsTickerInner");
+  if (!inner) return;
+
+  let headlines = [];
+  try {
+    const r = await fetch("/news?limit=3");
+    const j = await r.json();
+    if (j.ok) headlines = (j.items || []).map(x => x.headline);
+  } catch (_) {}
+
+  if (!headlines.length) return;
+
+  const items = headlines.map(h => `<span class="ticker-item">• ${escapeHtml(h)}</span>`).join("");
+  inner.innerHTML = items + items;
 }
 
 document.getElementById("sendBtn").addEventListener("click", toggleSendPanel);
 document.getElementById("sendConfirm").addEventListener("click", doTransfer);
 document.addEventListener("DOMContentLoaded", () => {
   initNewsTicker();
+  setInterval(refreshTickerHeadlines, 6000);
 });
 
 loadUser();
 setInterval(loadUser, 2000);
-

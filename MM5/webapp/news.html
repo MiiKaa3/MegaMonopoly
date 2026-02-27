@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Mega Monopoly 5 - News</title>
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <h1>News</h1>
+    <p><a href="/" id="backLink">Back</a></p>
+
+    <div id="newsFeed"></div>
+
+    <script>
+      function formatTime(t) {
+        const year = Math.floor(t / 4) + 1;
+        const q = (t % 4) + 1;
+        return `Y${year}Q${q}`;
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      async function loadNews() {
+        const feed = document.getElementById("newsFeed");
+        const r = await fetch("/news?limit=200");
+        const j = await r.json();
+
+        if (!j.ok) {
+          feed.textContent = "Failed to load news.";
+          return;
+        }
+
+        feed.innerHTML = "";
+
+        for (const item of j.items) {
+          const card = document.createElement("div");
+          card.className = "panel news-card";
+
+          card.innerHTML = `
+            <div class="news-headline">${escapeHtml(item.headline)}</div>
+            <div class="news-meta">${escapeHtml(formatTime(item.time))}</div>
+            <div class="news-body">${escapeHtml(item.body)}</div>
+          `;
+
+          feed.appendChild(card);
+        }
+      }
+
+      const params = new URLSearchParams(location.search);
+      const username = params.get("username");
+      const back = document.getElementById("backLink");
+      back.href = username ? `/dashboard.html?username=${encodeURIComponent(username)}` : "/";
+
+      loadNews();
+      setInterval(loadNews, 5000);
+    </script>
+  </body>
+</html>
