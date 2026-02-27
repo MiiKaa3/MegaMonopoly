@@ -46,3 +46,16 @@
 .news-headline { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
 .news-meta { font-size: 0.85rem; opacity: 0.8; margin-bottom: 10px; }
 .news-body { line-height: 1.35; opacity: 0.95; }
+
+.stock-market { display: grid; gap: 14px; }
+.industry { border: 1px solid #ddd; border-radius: 10px; padding: 12px; }
+.industry-title { font-weight: 700; margin-bottom: 10px; }
+.stock { padding: 8px 10px; border-radius: 8px; }
+.stock + .stock { border-top: 1px solid #eee; margin-top: 8px; padding-top: 12px; }
+.stock-row { display: flex; gap: 10px; align-items: baseline; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+.stock-change { min-width: 70px; }
+.stock-price { min-width: 80px; }
+.stock-ticker { font-weight: 700; }
+.stock-name { margin-top: 4px; opacity: 0.85; }
+.up { color: #0a7a2f; }
+.down { color: #b00020; }

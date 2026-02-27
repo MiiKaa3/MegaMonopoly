@@ -139,7 +139,6 @@ async function initNewsTicker() {
   requestAnimationFrame(tick);
 }
 
-// Refresh ticker headlines occasionally (cheap + good UX)
 async function refreshTickerHeadlines() {
   const inner = document.getElementById("newsTickerInner");
   if (!inner) return;
@@ -157,10 +156,27 @@ async function refreshTickerHeadlines() {
   inner.innerHTML = items + items;
 }
 
+function initStockClicks() {
+  const stocks = document.querySelectorAll(".stock");
+  for (const el of stocks) {
+    el.classList.add("clickable");
+    el.addEventListener("click", () => {
+      const tickerEl = el.querySelector(".stock-ticker");
+      const ticker = (tickerEl ? tickerEl.textContent : "").trim();
+      if (!ticker) return;
+
+      const u = username ? encodeURIComponent(username) : "";
+      const s = encodeURIComponent(ticker);
+      window.location.href = `/stock.html?username=${u}&stock=${s}`;
+    });
+  }
+}
+
 document.getElementById("sendBtn").addEventListener("click", toggleSendPanel);
 document.getElementById("sendConfirm").addEventListener("click", doTransfer);
 document.addEventListener("DOMContentLoaded", () => {
   initNewsTicker();
+  initStockClicks();
   setInterval(refreshTickerHeadlines, 6000);
 });
 
