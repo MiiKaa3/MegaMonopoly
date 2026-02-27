@@ -15,16 +15,40 @@
     <p>It is <strong id="t">-</strong></p>
     <p>Balance: <strong id="bal">-</strong></p>
 
+    <hr>
+
+    <p><strong id="stockName">-</strong></p>
+    <p>Industry: <span id="stockIndustry">-</span></p>
+    <p>
+      Price: <span id="stockPrice">-</span>
+      <span id="stockChange" class=""></span>
+    </p>
+
     <script>
       const params = new URLSearchParams(location.search);
       const username = params.get("username") || "";
-      const stock = params.get("stock") || "";
+      const symbol = params.get("stock") || ""; // dashboard uses ?stock=TICKER
 
       document.getElementById("u").textContent = username || "?";
-      document.getElementById("stockTicker").textContent = stock || "Stock";
+      document.getElementById("stockTicker").textContent = symbol || "Stock";
 
       const back = document.getElementById("backLink");
       back.href = username ? `/dashboard.html?username=${encodeURIComponent(username)}` : "/";
+
+      function fmtMoney(x) {
+        if (typeof x !== "number" || !isFinite(x)) return "-";
+        return `$${x.toFixed(2)}`;
+      }
+
+      function fmtChange(price, prev) {
+        if (typeof price !== "number" || typeof prev !== "number" || !isFinite(price) || !isFinite(prev) || prev === 0) {
+          return { text: "", cls: "" };
+        }
+        const pct = ((price - prev) / prev) * 100;
+        const up = pct >= 0;
+        const arrow = up ? "⌃" : "⌄";
+        return { text: ` ${arrow} ${Math.abs(pct).toFixed(1)}%`, cls: up ? "stock-change up" : "stock-change down" };
+      }
 
       async function loadUser() {
         if (!username) return;
@@ -41,8 +65,28 @@
         }
       }
 
+      async function loadStock() {
+        if (!symbol) return;
+
+        const r = await fetch(`/stock?symbol=${encodeURIComponent(symbol)}`);
+        const j = await r.json();
+
+        if (!j.ok || !j.stock) return;
+
+        document.getElementById("stockName").textContent = j.stock.name || "-";
+        document.getElementById("stockIndustry").textContent = j.stock.industry || "-";
+        document.getElementById("stockPrice").textContent = fmtMoney(j.stock.price);
+
+        const ch = fmtChange(j.stock.price, j.stock.prev_price);
+        const chEl = document.getElementById("stockChange");
+        chEl.textContent = ch.text;
+        chEl.className = ch.cls;
+      }
+
       loadUser();
+      loadStock();
       setInterval(loadUser, 2000);
+      setInterval(loadStock, 2000);
     </script>
   </body>
 </html>

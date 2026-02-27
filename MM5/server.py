@@ -60,6 +60,65 @@ def init_news_db(db_path: Path) -> None:
         conn.close()
 
 
+def init_stocks_db(db_path: Path) -> None:
+    conn = sqlite3.connect(db_path)
+    try:
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS stocks (
+                symbol TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                industry TEXT NOT NULL,
+                price REAL NOT NULL,
+                prev_price REAL NOT NULL
+            )
+            """
+        )
+    finally:
+        conn.close()
+
+
+DEFAULT_STOCKS = [
+    ("AAPL", "Apple Inc.", "Tech", 184.22),
+    ("MSFT", "Microsoft Corporation", "Tech", 412.10),
+    ("NVDA", "NVIDIA Corporation", "Tech", 885.40),
+    ("GOOGL", "Alphabet Inc.", "Tech", 151.77),
+
+    ("JPM", "JPMorgan Chase & Co.", "Finance", 172.33),
+    ("V", "Visa Inc.", "Finance", 273.90),
+    ("GS", "Goldman Sachs Group, Inc.", "Finance", 388.55),
+
+    ("XOM", "Exxon Mobil Corporation", "Energy / Materials", 113.08),
+    ("BHP", "BHP Group Limited", "Energy / Materials", 59.42),
+    ("RIO", "Rio Tinto Group", "Energy / Materials", 67.18),
+
+    ("BA", "The Boeing Company", "Industrials", 190.14),
+    ("CAT", "Caterpillar Inc.", "Industrials", 327.66),
+    ("TSLA", "Tesla, Inc.", "Industrials", 212.73),
+
+    ("WMT", "Walmart Inc.", "Consumer", 167.21),
+    ("MCD", "McDonald's Corporation", "Consumer", 289.95),
+
+    ("GME", "GameStop Corp.", "Meme", 18.42),
+]
+
+
+def ensure_initial_stocks(users_db_path: str) -> None:
+    conn = sqlite3.connect(users_db_path)
+    try:
+        count = conn.execute("SELECT COUNT(*) FROM stocks").fetchone()[0]
+        if count > 0:
+            return
+
+        conn.executemany(
+            "INSERT INTO stocks (symbol, name, industry, price, prev_price) VALUES (?, ?, ?, ?, ?)",
+            [(sym, name, ind, price, price) for (sym, name, ind, price) in DEFAULT_STOCKS],
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
 def normalise_username(raw: str) -> str:
     u = raw.strip()
     if not u:
@@ -69,6 +128,15 @@ def normalise_username(raw: str) -> str:
     u = "".join(ch for ch in u if ch in allowed)
 
     return u[:24]
+
+
+def normalise_symbol(raw: str) -> str:
+    s = raw.strip().upper()
+    if not s:
+        return ""
+    allowed = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    s = "".join(ch for ch in s if ch in allowed)
+    return s[:10]
 
 
 def format_time(t: int) -> str:
@@ -225,6 +293,72 @@ class Handler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps({"ok": True, "items": items}).encode())
             return
+
+        if u.path == "/stocks":
+            conn = sqlite3.connect(self.server.users_db_path)
+            try:
+                rows = conn.execute(
+                    "SELECT symbol, name, industry, price, prev_price FROM stocks ORDER BY industry, symbol"
+                ).fetchall()
+            finally:
+                conn.close()
+
+            stocks = []
+            for r in rows:
+                stocks.append({
+                    "symbol": r[0],
+                    "name": r[1],
+                    "industry": r[2],
+                    "price": r[3],
+                    "prev_price": r[4],
+                })
+
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(json.dumps({"ok": True, "time": TIME, "time_string": format_time(TIME), "stocks": stocks}).encode())
+            return
+
+        if u.path == "/stock":
+            qs = parse_qs(u.query)
+            symbol = normalise_symbol((qs.get("symbol") or [""])[0])
+            if not symbol:
+                self.send_response(400)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.end_headers()
+                self.wfile.write(json.dumps({"ok": False, "error": "missing symbol"}).encode())
+                return
+
+            conn = sqlite3.connect(self.server.users_db_path)
+            try:
+                row = conn.execute(
+                    "SELECT symbol, name, industry, price, prev_price FROM stocks WHERE symbol = ?",
+                    (symbol,),
+                ).fetchone()
+            finally:
+                conn.close()
+
+            if not row:
+                self.send_response(404)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.end_headers()
+                self.wfile.write(json.dumps({"ok": False, "error": "unknown symbol"}).encode())
+                return
+
+            stock = {
+                "symbol": row[0],
+                "name": row[1],
+                "industry": row[2],
+                "price": row[3],
+                "prev_price": row[4],
+            }
+
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(json.dumps({"ok": True, "time": TIME, "time_string": format_time(TIME), "stock": stock}).encode())
+            return
+
 
         return super().do_GET()
 
@@ -419,7 +553,7 @@ class Handler(SimpleHTTPRequestHandler):
         except Exception:
             path = self.path
 
-        if path in ("/user", "/users", "/news"):
+        if path in ("/user", "/users", "/news", "/stocks", "/stock"):
             return
 
         super().log_message(format, *args)
@@ -438,12 +572,15 @@ def main() -> None:
     news_db_path = projroot / NEWS_DB_NAME
 
     init_users_db(users_db_path)
+    init_stocks_db(users_db_path)
     init_news_db(news_db_path)
 
     events_bank = load_news_events(projroot)
 
     # Turn 0 population (as requested)
     ensure_initial_news(str(news_db_path), events_bank)
+
+    ensure_initial_stocks(str(users_db_path))
 
     os.chdir(webroot)
 

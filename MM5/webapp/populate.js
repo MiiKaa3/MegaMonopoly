@@ -139,6 +139,7 @@ async function initNewsTicker() {
   requestAnimationFrame(tick);
 }
 
+// Refresh ticker headlines occasionally (cheap + good UX)
 async function refreshTickerHeadlines() {
   const inner = document.getElementById("newsTickerInner");
   if (!inner) return;
@@ -154,6 +155,67 @@ async function refreshTickerHeadlines() {
 
   const items = headlines.map(h => `<span class="ticker-item">• ${escapeHtml(h)}</span>`).join("");
   inner.innerHTML = items + items;
+}
+
+document.getElementById("sendBtn").addEventListener("click", toggleSendPanel);
+document.getElementById("sendConfirm").addEventListener("click", doTransfer);
+
+// --- STOCK MARKET (dynamic from /stocks) ---
+let stockElBySymbol = null;
+
+function indexStockElements() {
+  stockElBySymbol = {};
+  const els = document.querySelectorAll(".stock");
+  for (const el of els) {
+    const tickerEl = el.querySelector(".stock-ticker");
+    const sym = (tickerEl ? tickerEl.textContent : "").trim();
+    if (sym) stockElBySymbol[sym] = el;
+  }
+}
+
+function fmtMoney(x) {
+  if (typeof x !== "number" || !isFinite(x)) return "-";
+  return `$${x.toFixed(2)}`;
+}
+
+function pctChange(price, prev) {
+  if (typeof price !== "number" || typeof prev !== "number" || !isFinite(price) || !isFinite(prev) || prev === 0) return null;
+  return ((price - prev) / prev) * 100;
+}
+
+function applyStockToElement(stock) {
+  if (!stockElBySymbol) return;
+  const el = stockElBySymbol[stock.symbol];
+  if (!el) return;
+
+  const priceEl = el.querySelector(".stock-price");
+  const nameEl = el.querySelector(".stock-name");
+  const changeEl = el.querySelector(".stock-change");
+
+  if (priceEl) priceEl.textContent = fmtMoney(stock.price);
+  if (nameEl) nameEl.textContent = stock.name || stock.symbol;
+
+  if (changeEl) {
+    const pct = pctChange(stock.price, stock.prev_price);
+    if (pct === null) {
+      changeEl.textContent = "•";
+      changeEl.classList.remove("up", "down");
+      return;
+    }
+
+    const up = pct >= 0;
+    const arrow = up ? "⌃" : "⌄";
+    changeEl.textContent = `${arrow} ${Math.abs(pct).toFixed(1)}%`;
+    changeEl.classList.toggle("up", up);
+    changeEl.classList.toggle("down", !up);
+  }
+}
+
+async function loadStocks() {
+  const r = await fetch("/stocks");
+  const j = await r.json();
+  if (!j.ok || !Array.isArray(j.stocks)) return;
+  for (const s of j.stocks) applyStockToElement(s);
 }
 
 function initStockClicks() {
@@ -172,13 +234,13 @@ function initStockClicks() {
   }
 }
 
-document.getElementById("sendBtn").addEventListener("click", toggleSendPanel);
-document.getElementById("sendConfirm").addEventListener("click", doTransfer);
 document.addEventListener("DOMContentLoaded", () => {
   initNewsTicker();
+  indexStockElements();
   initStockClicks();
+  loadStocks();
   setInterval(refreshTickerHeadlines, 6000);
+  setInterval(loadStocks, 2000);
 });
-
 loadUser();
 setInterval(loadUser, 2000);
