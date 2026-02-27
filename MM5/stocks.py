@@ -25,6 +25,8 @@ class Stock:
             price_change = max(prices)
         else:
             price_change = min(prices)
+        if randint(0,10) < 2:
+            self.trend = 0
         self.price = price_change
         self.history.append(self.price)
         
