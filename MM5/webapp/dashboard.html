@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8"/>
-		<meta name="viewport" content="width=device-width, inital-scale=1"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
 		<title>Mega Monopoly 5</title>
 		<link rel="icon" href="/images/favicon.ico">
 	</head>
@@ -11,6 +11,22 @@
 		<p>Welcome, <strong id="u">?</strong></p>
 		<p>It is <strong id="t">-</strong></p>
 		<p>Balance: <strong id="bal">-</strong></p>
+
+		<button id="sendBtn" type="button">Send</button>
+
+		<div id="sendPanel" style="display:none; margin-top: 12px; padding: 12px; border: 1px solid #ccc;">
+			<p><strong>Send money</strong></p>
+			<label>
+    				To:
+    				<select id="sendTo"></select>
+	  		</label>
+  			<label style="margin-left: 10px;">
+    				Amount:
+    				<input id="sendAmt" type="number" min="1" step="1" placeholder="0" style="width: 90px;" />
+	  		</label>
+  			<button id="sendConfirm" type="button" style="margin-left: 10px;">Confirm</button>
+  			<p id="sendMsg" style="margin-top: 10px;"></p>
+		</div>
 
 		<script src="/populate.js"></script>
 	</body>
