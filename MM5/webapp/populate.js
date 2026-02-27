@@ -44,15 +44,18 @@ function setMsg(text, ok) {
 
 function toggleSendPanel() {
   const panel = document.getElementById("sendPanel");
+  const btn = document.getElementById("sendBtn");
   const showing = panel.style.display !== "none";
 
   if (showing) {
     panel.style.display = "none";
+    btn.textContent = "Send";
     setMsg("", true);
     return;
   }
 
   panel.style.display = "block";
+  btn.textContent = "Close";
   setMsg("", true);
   loadUsersForDropdown();
 }
