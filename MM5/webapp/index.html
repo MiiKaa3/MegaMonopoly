@@ -5,11 +5,22 @@
 		<meta name="viewport" content="width=device-width, inital-scale=1"/>
 		<title>Mega Monopoly 5</title>
 		<link rel="icon" href="/images/favicon.ico">
-
 	</head>
 	<body>
-		<h1>Hello World!</h1>
-		<p>if you're reading this, we have a server running!</p>
+		<h1>Mega Monopoly 5</h1>
+		<p>Pick a username to join.</p>
+
+		<form method="POST" action="/register">
+			<input
+				name="username"
+				placeholder="username"
+				autocomplete="nickname"
+				required
+			/>
+			<button>
+				Continue
+			</button>
+		</form>
 	</body>
 </html>
 
