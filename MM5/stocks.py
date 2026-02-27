@@ -33,11 +33,11 @@ class Stock:
 
 # This usage will be handled by market 
 if __name__ == "__main__":
-    stock = Stock("Test stock", [100, 5, 0])
+    stock = Stock("Test stock", [100, 5, 0, 0.2])
     for i in range(50):
         stock.update()
         if randint(0,10) <= 1:
             trend = randint(-3, 3)
-            stock.update_params([stock.price + trend*stock.softening_factor, stock.volatility + randint(-1,1), trend])
+            stock.update_params([stock.price + trend*stock.softening_factor, stock.volatility + randint(-1,1), trend, stock.softening_factor])
             print(f"At turn {i}: trend changed to {trend}")
     stock.plot()
