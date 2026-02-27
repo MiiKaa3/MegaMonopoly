@@ -39,3 +39,10 @@
   display: inline-block;
   padding-right: 28px;        
 }
+
+
+/* News feed */
+.news-card { }
+.news-headline { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+.news-meta { font-size: 0.85rem; opacity: 0.8; margin-bottom: 10px; }
+.news-body { line-height: 1.35; opacity: 0.95; }
