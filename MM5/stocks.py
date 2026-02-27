@@ -15,6 +15,9 @@ class Stock:
         self.volatility = params[1]
         self.trend = params[2]
         self.softening_factor = params[3]
+        
+    def update_trend(self, trend):
+        self.trend = trend
     
     def update(self):
         prices = [gauss(self.mean, self.volatility) for _ in range(abs(self.trend) + 1)]
