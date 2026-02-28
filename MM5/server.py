@@ -38,6 +38,7 @@ def init_users_db(db_path: Path) -> None:
             )
             """
         )
+        conn.commit()
     finally:
         conn.close()
 
@@ -56,11 +57,13 @@ def init_news_db(db_path: Path) -> None:
             )
             """
         )
+        conn.commit()
     finally:
         conn.close()
 
 
 def init_stocks_db(db_path: Path) -> None:
+    """Snapshot table: current price state used by frontend."""
     conn = sqlite3.connect(db_path)
     try:
         conn.execute(
@@ -74,46 +77,83 @@ def init_stocks_db(db_path: Path) -> None:
             )
             """
         )
+        conn.commit()
     finally:
         conn.close()
 
 
-DEFAULT_STOCKS = [
-    ("AAPL", "Apple Inc.", "Tech", 184.22),
-    ("MSFT", "Microsoft Corporation", "Tech", 412.10),
-    ("NVDA", "NVIDIA Corporation", "Tech", 885.40),
-    ("GOOGL", "Alphabet Inc.", "Tech", 151.77),
-
-    ("JPM", "JPMorgan Chase & Co.", "Finance", 172.33),
-    ("V", "Visa Inc.", "Finance", 273.90),
-    ("GS", "Goldman Sachs Group, Inc.", "Finance", 388.55),
-
-    ("XOM", "Exxon Mobil Corporation", "Energy / Materials", 113.08),
-    ("BHP", "BHP Group Limited", "Energy / Materials", 59.42),
-    ("RIO", "Rio Tinto Group", "Energy / Materials", 67.18),
-
-    ("BA", "The Boeing Company", "Industrials", 190.14),
-    ("CAT", "Caterpillar Inc.", "Industrials", 327.66),
-    ("TSLA", "Tesla, Inc.", "Industrials", 212.73),
-
-    ("WMT", "Walmart Inc.", "Consumer", 167.21),
-    ("MCD", "McDonald's Corporation", "Consumer", 289.95),
-
-    ("GME", "GameStop Corp.", "Meme", 18.42),
-]
-
-
-def ensure_initial_stocks(users_db_path: str) -> None:
-    conn = sqlite3.connect(users_db_path)
+def init_stock_prices_db(db_path: Path) -> None:
+    """History table: append-only (symbol,time)->price."""
+    conn = sqlite3.connect(db_path)
     try:
-        count = conn.execute("SELECT COUNT(*) FROM stocks").fetchone()[0]
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS stock_prices (
+                symbol TEXT NOT NULL,
+                time INTEGER NOT NULL,
+                price REAL NOT NULL,
+                PRIMARY KEY (symbol, time),
+                FOREIGN KEY (symbol) REFERENCES stocks(symbol)
+            )
+            """
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def seed_stocks_if_empty(db_path: Path) -> None:
+    stocks_seed = [
+        ("AAPL", "Apple Inc.", "Tech", 184.22),
+        ("MSFT", "Microsoft", "Tech", 412.10),
+        ("NVDA", "NVIDIA", "Tech", 795.50),
+        ("GOOGL", "Alphabet", "Tech", 141.32),
+
+        ("JPM", "JPMorgan Chase", "Finance", 166.18),
+        ("V", "Visa", "Finance", 273.60),
+        ("GS", "Goldman Sachs", "Finance", 381.12),
+
+        ("XOM", "ExxonMobil", "Energy/Materials", 104.70),
+        ("BHP", "BHP Group", "Energy/Materials", 58.40),
+        ("RIO", "Rio Tinto", "Energy/Materials", 71.25),
+
+        ("BA", "Boeing", "Industrials", 192.44),
+        ("CAT", "Caterpillar", "Industrials", 308.55),
+        ("TSLA", "Tesla", "Industrials", 188.90),
+
+        ("WMT", "Walmart", "Consumer", 168.12),
+        ("MCD", "McDonald's", "Consumer", 292.05),
+
+        ("GME", "GameStop", "Meme", 17.80),
+    ]
+
+    conn = sqlite3.connect(db_path)
+    try:
+        cur = conn.cursor()
+        count = cur.execute("SELECT COUNT(*) FROM stocks").fetchone()[0]
         if count > 0:
             return
+        for sym, name, industry, price in stocks_seed:
+            cur.execute(
+                "INSERT INTO stocks(symbol, name, industry, price, prev_price) VALUES(?,?,?,?,?)",
+                (sym, name, industry, float(price), float(price)),
+            )
+        conn.commit()
+    finally:
+        conn.close()
 
-        conn.executemany(
-            "INSERT INTO stocks (symbol, name, industry, price, prev_price) VALUES (?, ?, ?, ?, ?)",
-            [(sym, name, ind, price, price) for (sym, name, ind, price) in DEFAULT_STOCKS],
-        )
+
+def ensure_history_at_time(db_path: Path, time_value: int) -> None:
+    """Make sure every stock has a history row at time_value."""
+    conn = sqlite3.connect(db_path)
+    try:
+        cur = conn.cursor()
+        rows = cur.execute("SELECT symbol, price FROM stocks").fetchall()
+        for sym, price in rows:
+            cur.execute(
+                "INSERT OR IGNORE INTO stock_prices(symbol, time, price) VALUES(?,?,?)",
+                (sym, int(time_value), float(price)),
+            )
         conn.commit()
     finally:
         conn.close()
@@ -126,17 +166,7 @@ def normalise_username(raw: str) -> str:
 
     allowed = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     u = "".join(ch for ch in u if ch in allowed)
-
     return u[:24]
-
-
-def normalise_symbol(raw: str) -> str:
-    s = raw.strip().upper()
-    if not s:
-        return ""
-    allowed = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-    s = "".join(ch for ch in s if ch in allowed)
-    return s[:10]
 
 
 def format_time(t: int) -> str:
@@ -182,7 +212,6 @@ def ensure_initial_news(news_db_path: str, events_bank: list[dict]) -> None:
     if count > 0:
         return
 
-    # Populate turn 0 with up to 3 events (as requested)
     if not events_bank:
         insert_news_items(news_db_path, 0, [{
             "headline": "No news bank found",
@@ -199,8 +228,55 @@ def generate_news_for_turn(events_bank: list[dict], k_min: int = 1, k_max: int =
     if not events_bank:
         return []
     k = random.randint(k_min, k_max)
-    # Repeatable events are allowed, so we can sample with replacement
     return [random.choice(events_bank) for _ in range(k)]
+
+
+def tick_stock_market(users_db_path: str, news_items: list[dict], time_value: int) -> None:
+    """Advance all stock prices by one tick and append history.
+
+    News integration stub: we parse effects, but currently do nothing with them.
+    """
+    # collect per-symbol effects (currently unused)
+    effects_by_symbol: dict[str, list[dict]] = {}
+    for item in (news_items or []):
+        effects = item.get("effects") or {}
+        stock_effects = effects.get("stocks") or []
+        if isinstance(stock_effects, list):
+            for eff in stock_effects:
+                try:
+                    sym = str(eff.get("symbol", "")).strip().upper()
+                except Exception:
+                    sym = ""
+                if not sym:
+                    continue
+                effects_by_symbol.setdefault(sym, []).append(eff)
+
+    conn = sqlite3.connect(users_db_path)
+    try:
+        cur = conn.cursor()
+        rows = cur.execute("SELECT symbol, price FROM stocks").fetchall()
+        # Simple market move for now (until we fully DB-drive your Market/Stock objects)
+        for sym, old_price in rows:
+            price = float(old_price)
+
+            # Placeholder: later loop effects_by_symbol.get(sym, []) here
+
+            # Random return in roughly +/-3% range with heavier tails
+            ret = random.gauss(0.0, 0.015)
+            new_price = max(0.01, price * (1.0 + ret))
+
+            cur.execute(
+                "UPDATE stocks SET prev_price = ?, price = ? WHERE symbol = ?",
+                (price, new_price, sym),
+            )
+            cur.execute(
+                "INSERT OR REPLACE INTO stock_prices(symbol, time, price) VALUES(?,?,?)",
+                (sym, int(time_value), float(new_price)),
+            )
+
+        conn.commit()
+    finally:
+        conn.close()
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -214,7 +290,7 @@ class Handler(SimpleHTTPRequestHandler):
             conn = sqlite3.connect(self.server.users_db_path)
             try:
                 row = conn.execute(
-                    "SELECT username, balance FROM users WHERE username = ?",
+                    "SELECT balance FROM users WHERE username = ?",
                     (username,),
                 ).fetchone()
             finally:
@@ -222,76 +298,71 @@ class Handler(SimpleHTTPRequestHandler):
 
             if not row:
                 self.send_response(404)
-                self.send_header("Content-Type", "application/json; charset=utf-8")
-                self.end_headers()
-                self.wfile.write(json.dumps({"ok": False, "error": "unknown user"}).encode())
-                return
+                payload = {"ok": False, "error": "user not found"}
+            else:
+                self.send_response(200)
+                payload = {
+                    "ok": True,
+                    "username": username,
+                    "balance": row[0],
+                    "time": TIME,
+                    "time_string": format_time(TIME),
+                }
 
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Type", "application/json")
             self.end_headers()
-            self.wfile.write(json.dumps({
-                "ok": True,
-                "username": row[0],
-                "balance": row[1],
-                "time": TIME,
-                "time_string": format_time(TIME),
-            }).encode())
+            self.wfile.write(json.dumps(payload).encode("utf-8"))
             return
 
         if u.path == "/users":
             conn = sqlite3.connect(self.server.users_db_path)
             try:
-                rows = conn.execute("SELECT username FROM users ORDER BY username").fetchall()
+                rows = conn.execute("SELECT username, balance FROM users ORDER BY username").fetchall()
             finally:
                 conn.close()
 
-            users = [r[0] for r in rows]
-
             self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
+            payload = {"ok": True, "users": [{"username": r[0], "balance": r[1]} for r in rows]}
+            self.send_header("Content-Type", "application/json")
             self.end_headers()
-            self.wfile.write(json.dumps({"ok": True, "users": users}).encode())
+            self.wfile.write(json.dumps(payload).encode("utf-8"))
             return
 
         if u.path == "/news":
             qs = parse_qs(u.query)
             try:
-                limit = int((qs.get("limit") or ["50"])[0])
+                time_value = int((qs.get("time") or [str(TIME)])[0])
             except Exception:
-                limit = 50
-            try:
-                offset = int((qs.get("offset") or ["0"])[0])
-            except Exception:
-                offset = 0
-
-            limit = max(1, min(limit, 500))
-            offset = max(0, offset)
+                time_value = TIME
 
             conn = sqlite3.connect(self.server.news_db_path)
             try:
                 rows = conn.execute(
-                    "SELECT id, time, headline, body, effects_json FROM news ORDER BY time DESC, id DESC LIMIT ? OFFSET ?",
-                    (limit, offset),
+                    "SELECT time, headline, body, effects_json FROM news WHERE time = ? ORDER BY id",
+                    (time_value,),
                 ).fetchall()
             finally:
                 conn.close()
 
             items = []
-            for r in rows:
+            for t, headline, body, effects_json in rows:
+                try:
+                    effects = json.loads(effects_json) if effects_json else {}
+                except Exception:
+                    effects = {}
                 items.append({
-                    "id": r[0],
-                    "time": r[1],
-                    "time_string": format_time(r[1]),
-                    "headline": r[2],
-                    "body": r[3],
-                    "effects_json": r[4],
+                    "time": t,
+                    "time_string": format_time(t),
+                    "headline": headline,
+                    "body": body,
+                    "effects": effects,
                 })
 
             self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
+            payload = {"ok": True, "time": time_value, "time_string": format_time(time_value), "items": items}
+            self.send_header("Content-Type", "application/json")
             self.end_headers()
-            self.wfile.write(json.dumps({"ok": True, "items": items}).encode())
+            self.wfile.write(json.dumps(payload).encode("utf-8"))
             return
 
         if u.path == "/stocks":
@@ -304,30 +375,25 @@ class Handler(SimpleHTTPRequestHandler):
                 conn.close()
 
             stocks = []
-            for r in rows:
+            for sym, name, industry, price, prev in rows:
                 stocks.append({
-                    "symbol": r[0],
-                    "name": r[1],
-                    "industry": r[2],
-                    "price": r[3],
-                    "prev_price": r[4],
+                    "symbol": sym,
+                    "name": name,
+                    "industry": industry,
+                    "price": float(price),
+                    "prev_price": float(prev),
                 })
 
             self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
+            payload = {"ok": True, "time": TIME, "time_string": format_time(TIME), "stocks": stocks}
+            self.send_header("Content-Type", "application/json")
             self.end_headers()
-            self.wfile.write(json.dumps({"ok": True, "time": TIME, "time_string": format_time(TIME), "stocks": stocks}).encode())
+            self.wfile.write(json.dumps(payload).encode("utf-8"))
             return
 
         if u.path == "/stock":
             qs = parse_qs(u.query)
-            symbol = normalise_symbol((qs.get("symbol") or [""])[0])
-            if not symbol:
-                self.send_response(400)
-                self.send_header("Content-Type", "application/json; charset=utf-8")
-                self.end_headers()
-                self.wfile.write(json.dumps({"ok": False, "error": "missing symbol"}).encode())
-                return
+            symbol = (qs.get("symbol") or [""])[0].strip().upper()
 
             conn = sqlite3.connect(self.server.users_db_path)
             try:
@@ -340,32 +406,66 @@ class Handler(SimpleHTTPRequestHandler):
 
             if not row:
                 self.send_response(404)
-                self.send_header("Content-Type", "application/json; charset=utf-8")
-                self.end_headers()
-                self.wfile.write(json.dumps({"ok": False, "error": "unknown symbol"}).encode())
-                return
+                payload = {"ok": False, "error": "stock not found"}
+            else:
+                sym, name, industry, price, prev = row
+                payload = {
+                    "ok": True,
+                    "time": TIME,
+                    "time_string": format_time(TIME),
+                    "stock": {
+                        "symbol": sym,
+                        "name": name,
+                        "industry": industry,
+                        "price": float(price),
+                        "prev_price": float(prev),
+                    },
+                }
+                self.send_response(200)
 
-            stock = {
-                "symbol": row[0],
-                "name": row[1],
-                "industry": row[2],
-                "price": row[3],
-                "prev_price": row[4],
-            }
-
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Type", "application/json")
             self.end_headers()
-            self.wfile.write(json.dumps({"ok": True, "time": TIME, "time_string": format_time(TIME), "stock": stock}).encode())
+            self.wfile.write(json.dumps(payload).encode("utf-8"))
             return
 
+        if u.path == "/stock_history":
+            qs = parse_qs(u.query)
+            symbol = (qs.get("symbol") or [""])[0].strip().upper()
+            try:
+                limit = int((qs.get("limit") or ["120"])[0])
+            except Exception:
+                limit = 120
+            limit = max(1, min(limit, 2000))
+
+            conn = sqlite3.connect(self.server.users_db_path)
+            try:
+                rows = conn.execute(
+                    "SELECT time, price FROM stock_prices WHERE symbol = ? ORDER BY time DESC LIMIT ?",
+                    (symbol, limit),
+                ).fetchall()
+            finally:
+                conn.close()
+
+            # reverse to ascending time for plotting
+            series = []
+            for t, price in reversed(rows):
+                series.append({"time": int(t), "time_string": format_time(int(t)), "price": float(price)})
+
+            self.send_response(200)
+            payload = {"ok": True, "symbol": symbol, "time": TIME, "time_string": format_time(TIME), "series": series}
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(payload).encode("utf-8"))
+            return
 
         return super().do_GET()
 
     def do_POST(self):
         global TIME
 
-        if self.path == "/admin":
+        u = urlparse(self.path)
+
+        if u.path == "/admin":
             if not is_localhost(self):
                 self.send_response(403)
                 self.send_header("Content-Type", "application/json")
@@ -374,39 +474,41 @@ class Handler(SimpleHTTPRequestHandler):
                 return
 
             data = read_json_body(self)
-            cmd = data.get("cmd", "")
+            cmd = (data.get("cmd") or "").strip()
 
             users_conn = sqlite3.connect(self.server.users_db_path)
-            users_cur = users_conn.cursor()
-
             try:
+                users_cur = users_conn.cursor()
+
                 if cmd == "set_balance":
                     username = normalise_username(str(data.get("username", "")))
-                    amount = int(data.get("amount", 0))
+                    try:
+                        balance = int(data.get("balance", 0))
+                    except Exception:
+                        balance = 0
 
-                    users_cur.execute("UPDATE users SET balance = ? WHERE username = ?", (amount, username))
+                    users_cur.execute("UPDATE users SET balance = ? WHERE username = ?", (balance, username))
                     users_conn.commit()
 
-                    if users_cur.rowcount == 0:
-                        self.send_response(404)
-                        payload = {"ok": False, "error": "user not found"}
-                    else:
-                        self.send_response(200)
-                        payload = {"ok": True, "cmd": cmd, "username": username, "balance": amount}
+                    self.send_response(200)
+                    payload = {"ok": True, "cmd": cmd, "username": username, "balance": balance}
 
                 elif cmd == "adjust_balance":
                     username = normalise_username(str(data.get("username", "")))
-                    delta = int(data.get("delta", 0))
+                    try:
+                        delta = int(data.get("delta", 0))
+                    except Exception:
+                        delta = 0
 
-                    users_cur.execute("UPDATE users SET balance = balance + ? WHERE username = ?", (delta, username))
-                    users_conn.commit()
-
-                    if users_cur.rowcount == 0:
+                    row = users_cur.execute("SELECT balance FROM users WHERE username = ?", (username,)).fetchone()
+                    if not row:
                         self.send_response(404)
                         payload = {"ok": False, "error": "user not found"}
                     else:
-                        users_cur.execute("SELECT balance FROM users WHERE username = ?", (username,))
-                        new_balance = users_cur.fetchone()[0]
+                        new_balance = int(row[0]) + int(delta)
+                        users_cur.execute("UPDATE users SET balance = ? WHERE username = ?", (new_balance, username))
+                        users_conn.commit()
+
                         self.send_response(200)
                         payload = {"ok": True, "cmd": cmd, "username": username, "balance": new_balance}
 
@@ -415,14 +517,16 @@ class Handler(SimpleHTTPRequestHandler):
                     if step < 1:
                         step = 1
 
-                    # Advance one turn at a time so we can generate news per turn
                     for _ in range(step):
                         TIME += 1
                         new_items = generate_news_for_turn(self.server.news_events_bank)
                         insert_news_items(self.server.news_db_path, TIME, new_items)
 
+                        # tie market tick to the same endpoint, with access to this turn's news
+                        tick_stock_market(self.server.users_db_path, new_items, TIME)
+
                     self.send_response(200)
-                    payload = {"ok": True, "cmd": cmd, "time": TIME}
+                    payload = {"ok": True, "cmd": cmd, "time": TIME, "time_string": format_time(TIME)}
 
                 else:
                     self.send_response(400)
@@ -436,115 +540,41 @@ class Handler(SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps(payload).encode("utf-8"))
             return
 
-        if self.path == "/transfer":
-            data = read_json_body(self)
+        # login/register form at /
+        if u.path in ("/login", "/register"):
+            length = int(self.headers.get("Content-Length", "0"))
+            body = self.rfile.read(length).decode("utf-8", errors="replace")
+            form = parse_qs(body)
 
-            from_user = normalise_username(str(data.get("from", "")))
-            to_user = normalise_username(str(data.get("to", "")))
+            raw_username = (form.get("username") or [""])[0]
+            username = normalise_username(raw_username)
+
+            if not username:
+                self.send_response(303)
+                self.send_header("Location", "/")
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.end_headers()
+                self.wfile.write(b'<!doctype html><meta charset="utf-8"><a href="/">Redirecting...</a>')
+                return
+
+            conn = sqlite3.connect(self.server.users_db_path)
             try:
-                amount = int(data.get("amount", 0))
-            except Exception:
-                amount = 0
+                conn.execute(
+                    "INSERT OR IGNORE INTO users (username, balance) VALUES (?, ?)",
+                    (username, 0)
+                )
+                conn.commit()
+            finally:
+                conn.close()
 
-            if not from_user or not to_user:
-                self.send_response(400)
-                payload = {"ok": False, "error": "missing user"}
-            elif from_user == to_user:
-                self.send_response(400)
-                payload = {"ok": False, "error": "cannot send to yourself"}
-            elif amount <= 0:
-                self.send_response(400)
-                payload = {"ok": False, "error": "amount must be positive"}
-            else:
-                conn = sqlite3.connect(self.server.users_db_path)
-                try:
-                    cur = conn.cursor()
-                    cur.execute("BEGIN IMMEDIATE")
-
-                    row_from = cur.execute(
-                        "SELECT balance FROM users WHERE username = ?",
-                        (from_user,),
-                    ).fetchone()
-                    row_to = cur.execute(
-                        "SELECT balance FROM users WHERE username = ?",
-                        (to_user,),
-                    ).fetchone()
-
-                    if not row_from or not row_to:
-                        conn.rollback()
-                        self.send_response(404)
-                        payload = {"ok": False, "error": "unknown user"}
-                    elif row_from[0] < amount:
-                        conn.rollback()
-                        self.send_response(400)
-                        payload = {"ok": False, "error": "insufficient funds"}
-                    else:
-                        cur.execute(
-                            "UPDATE users SET balance = balance - ? WHERE username = ?",
-                            (amount, from_user),
-                        )
-                        cur.execute(
-                            "UPDATE users SET balance = balance + ? WHERE username = ?",
-                            (amount, to_user),
-                        )
-
-                        new_from = cur.execute(
-                            "SELECT balance FROM users WHERE username = ?",
-                            (from_user,),
-                        ).fetchone()[0]
-
-                        new_to = cur.execute(
-                            "SELECT balance FROM users WHERE username = ?",
-                            (to_user,),
-                        ).fetchone()[0]
-
-                        conn.commit()
-                        self.send_response(200)
-                        payload = {
-                            "ok": True,
-                            "from": from_user,
-                            "to": to_user,
-                            "amount": amount,
-                            "from_balance": new_from,
-                            "to_balance": new_to,
-                        }
-                finally:
-                    conn.close()
-
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.end_headers()
-            self.wfile.write(json.dumps(payload).encode("utf-8"))
-            return
-
-        if self.path != "/register":
-            self.send_error(404, "Not found")
-            return
-
-        length = int(self.headers.get("Content-Length", "0"))
-        body = self.rfile.read(length).decode("utf-8", errors="replace")
-        form = parse_qs(body)
-
-        raw_username = (form.get("username") or [""])[0]
-        username = normalise_username(raw_username)
-
-        if not username:
             self.send_response(303)
-            self.send_header("Location", "/")
+            self.send_header("Location", f"/dashboard.html?username={quote(username)}")
+            self.send_header("Content-Type", "text/html; charset=utf-8")
             self.end_headers()
+            self.wfile.write(b'<!doctype html><meta charset="utf-8"><a href="/dashboard.html?username=' + quote(username).encode("utf-8") + b'">Redirecting...</a>')
             return
 
-        conn = sqlite3.connect(self.server.users_db_path)
-        try:
-            conn.execute(
-                "INSERT OR IGNORE INTO users (username, balance) VALUES (?, ?)",
-                (username, 0)
-            )
-            conn.commit()
-        finally:
-            conn.close()
-
-        self.send_response(303)
-        self.send_header("Location", f"/dashboard.html?username={quote(username)}")
+        self.send_response(404)
         self.end_headers()
 
     def log_message(self, format, *args):
@@ -553,13 +583,15 @@ class Handler(SimpleHTTPRequestHandler):
         except Exception:
             path = self.path
 
-        if path in ("/user", "/users", "/news", "/stocks", "/stock"):
+        if path in ("/user", "/users", "/news", "/stocks", "/stock", "/stock_history"):
             return
 
         super().log_message(format, *args)
 
 
 def main() -> None:
+    global TIME
+
     host = "0.0.0.0"
     port = 8888
 
@@ -572,15 +604,18 @@ def main() -> None:
     news_db_path = projroot / NEWS_DB_NAME
 
     init_users_db(users_db_path)
-    init_stocks_db(users_db_path)
     init_news_db(news_db_path)
 
+    # stocks + history live in users.db
+    init_stocks_db(users_db_path)
+    init_stock_prices_db(users_db_path)
+    seed_stocks_if_empty(users_db_path)
+
+    # ensure time-0 history exists
+    ensure_history_at_time(users_db_path, TIME)
+
     events_bank = load_news_events(projroot)
-
-    # Turn 0 population (as requested)
     ensure_initial_news(str(news_db_path), events_bank)
-
-    ensure_initial_stocks(str(users_db_path))
 
     os.chdir(webroot)
 

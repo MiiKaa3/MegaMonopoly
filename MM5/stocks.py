@@ -1,5 +1,4 @@
 from random import gauss, randint
-import matplotlib.pyplot as plt
 class Stock:
     def __init__(self, name, params):
         self.name = name
@@ -30,11 +29,20 @@ class Stock:
         self.price = price_change
         self.history.append(self.price)
         
-    def plot(self):
+    def plot(self, show: bool = True, path: str | None = None):
+        """Optional debugging helper. Imports matplotlib lazily."""
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        plt.figure()
         plt.plot(self.history[-50:])
         plt.title(f"{self.name} $USD")
         plt.ylabel("Price ($USD)")
-        plt.show()
+        if path:
+            plt.savefig(path, bbox_inches="tight")
+        if show and not path:
+            plt.show()
+        plt.close()
 
 # This usage will be handled by market 
 if __name__ == "__main__":

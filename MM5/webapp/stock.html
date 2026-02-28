@@ -4,6 +4,7 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Mega Monopoly 5 - Stock</title>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <link rel="icon" href="/images/favicon.ico">
     <link rel="stylesheet" href="styles.css">
   </head>
@@ -23,6 +24,8 @@
       Price: <span id="stockPrice">-</span>
       <span id="stockChange" class=""></span>
     </p>
+
+    <div id="chart" style="width: 100%; height: 360px;"></div>
 
     <script>
       const params = new URLSearchParams(location.search);
@@ -83,10 +86,34 @@
         chEl.className = ch.cls;
       }
 
+
+      async function loadHistory() {
+        if (!symbol) return;
+        if (typeof Plotly === "undefined") return;
+
+        const r = await fetch(`/stock_history?symbol=${encodeURIComponent(symbol)}&limit=120`);
+        const j = await r.json();
+        if (!j.ok || !Array.isArray(j.series)) return;
+
+        const x = j.series.map(p => p.time_string || String(p.time));
+        const y = j.series.map(p => p.price);
+
+        const trace = { x, y, mode: "lines+markers", name: symbol };
+        const layout = {
+          margin: { l: 40, r: 15, t: 10, b: 40 },
+          xaxis: { title: "Time", type: "category" },
+          yaxis: { title: "Price" }
+        };
+
+        Plotly.react("chart", [trace], layout, { displayModeBar: false, responsive: true });
+      }
+
       loadUser();
       loadStock();
+      loadHistory();
       setInterval(loadUser, 2000);
       setInterval(loadStock, 2000);
+      setInterval(loadHistory, 5000);
     </script>
   </body>
 </html>

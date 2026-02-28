@@ -1,6 +1,5 @@
 import stocks
 from random import randint, gauss
-import matplotlib.pyplot as plt
 import math
 
 class Market:
@@ -17,7 +16,12 @@ class Market:
             stock.update()
         self.turn_counter += 1
     
-    def plot(self):
+    def plot(self, show: bool = True, path: str | None = None):
+        """Optional debugging helper. Imports matplotlib lazily."""
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+
         stocks_list = list(self.stocks.values())
         n = len(stocks_list)
 
@@ -52,7 +56,11 @@ class Market:
             ax.set_visible(False)
 
         plt.tight_layout()
-        plt.show()
+        if path:
+            plt.savefig(path, bbox_inches="tight")
+        if show and not path:
+            plt.show()
+        plt.close()
         
 if __name__ == "__main__":
     stockdict = {
