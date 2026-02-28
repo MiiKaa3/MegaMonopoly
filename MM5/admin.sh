@@ -13,6 +13,8 @@ Usage:
   ./admin.sh set <username> <amount>
   ./admin.sh add <username> <delta>
   ./admin.sh tick [step]
+  ./admin.sh buy <username> <ticker> <qty>
+  ./admin.sh sell <username> <ticker> <qty>
   ./admin.sh time
   ./admin.sh user <username>
 
@@ -24,7 +26,8 @@ Examples:
   ./admin.sh add mikey -50
   ./admin.sh tick
   ./admin.sh tick 4
-  ./admin.sh time
+  ./admin.sh buy mikey AAPL 3
+  ./admin.sh sell mikey AAPL 1
   ./admin.sh user mikey
 EOF
 }
@@ -40,6 +43,14 @@ pretty() {
 post_admin() {
   local json="$1"
   curl -sS -X POST "${BASE_URL}/admin" \
+    -H "Content-Type: application/json" \
+    -d "${json}"
+}
+
+post_json() {
+  local endpoint="$1"
+  local json="$2"
+  curl -sS -X POST "${BASE_URL}/${endpoint}" \
     -H "Content-Type: application/json" \
     -d "${json}"
 }
@@ -61,7 +72,8 @@ case "$cmd" in
   set)
     [[ $# -eq 2 ]] || die "set requires: <username> <amount>"
     user="$1"; amt="$2"
-    post_admin "{\"cmd\":\"set_balance\",\"username\":\"${user}\",\"amount\":${amt}}" | pretty
+    # server expects field name "balance"
+    post_admin "{\"cmd\":\"set_balance\",\"username\":\"${user}\",\"balance\":${amt}}" | pretty
     ;;
 
   add|adjust)
@@ -76,9 +88,7 @@ case "$cmd" in
     ;;
 
   time)
-    # show current TIME by querying any user? You already return time in /user.
-    # We'll just ask for a known user if provided, otherwise error.
-    die "time needs a username in this codebase (TIME is returned by /user). Use: ./admin.sh user <username> (shows time too)."
+    die "TIME is returned by /user. Use: ./admin.sh user <username>"
     ;;
 
   user)
@@ -86,8 +96,19 @@ case "$cmd" in
     get_user "$1" | pretty
     ;;
 
+  buy)
+    [[ $# -eq 3 ]] || die "buy requires: <username> <ticker> <qty>"
+    user="$1"; ticker="$2"; qty="$3"
+    post_json "buy" "{\"username\":\"${user}\",\"symbol\":\"${ticker}\",\"qty\":${qty}}" | pretty
+    ;;
+
+  sell)
+    [[ $# -eq 3 ]] || die "sell requires: <username> <ticker> <qty>"
+    user="$1"; ticker="$2"; qty="$3"
+    post_json "sell" "{\"username\":\"${user}\",\"symbol\":\"${ticker}\",\"qty\":${qty}}" | pretty
+    ;;
+
   *)
     die "unknown command: $cmd (run ./admin.sh --help)"
     ;;
 esac
-
