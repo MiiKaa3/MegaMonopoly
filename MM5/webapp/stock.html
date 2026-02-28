@@ -16,6 +16,10 @@
     <p>It is <strong id="t">-</strong></p>
     <p>Balance: <strong id="bal">-</strong></p>
 
+    <p>Holdings: <strong id="holdingsLine">-</strong></p>
+    <p>Market value: <strong id="marketValue">-</strong></p>
+    <p>Net worth: <strong id="netWorth">-</strong></p>
+
     <hr>
 
     <p><strong id="stockName">-</strong></p>
@@ -27,10 +31,23 @@
 
     <div id="chart" style="width: 100%; height: 360px;"></div>
 
+    <div style="margin-top: 14px;">
+      <label>
+        Quantity:
+        <input id="tradeQty" type="number" min="1" step="1" value="1" style="width: 90px;" />
+      </label>
+      <button id="buyBtn" type="button" style="margin-left: 8px;">Buy</button>
+      <button id="sellBtn" type="button" style="margin-left: 8px;">Sell</button>
+      <span id="tradeMsg" style="margin-left: 10px;"></span>
+    </div>
+
     <script>
       const params = new URLSearchParams(location.search);
       const username = params.get("username") || "";
       const symbol = params.get("stock") || ""; // dashboard uses ?stock=TICKER
+
+      let latestBalance = 0;
+      let latestStocksBySymbol = {};
 
       document.getElementById("u").textContent = username || "?";
       document.getElementById("stockTicker").textContent = symbol || "Stock";
@@ -61,10 +78,108 @@
 
         if (j.ok) {
           document.getElementById("bal").textContent = j.balance;
+          latestBalance = Number(j.balance) || 0;
           document.getElementById("t").textContent = j.time_string;
         } else {
           document.getElementById("bal").textContent = "unknown";
           document.getElementById("t").textContent = "-";
+        }
+      }
+
+
+      function setTradeMsg(text, ok) {
+        const el = document.getElementById("tradeMsg");
+        if (!el) return;
+        el.textContent = text || "";
+        el.style.color = ok ? "green" : "crimson";
+      }
+
+      async function loadAllStocks() {
+        const r = await fetch("/stocks");
+        const j = await r.json();
+        if (!j.ok || !Array.isArray(j.stocks)) return;
+        latestStocksBySymbol = {};
+        for (const s of j.stocks) latestStocksBySymbol[s.symbol] = s;
+      }
+
+      async function loadPortfolioSummary() {
+        const holdingsEl = document.getElementById("holdingsLine");
+        const mvEl = document.getElementById("marketValue");
+        const nwEl = document.getElementById("netWorth");
+        if (!holdingsEl || !mvEl || !nwEl) return;
+        if (!username) return;
+
+        let holdings = [];
+        try {
+          const r = await fetch(`/holdings?username=${encodeURIComponent(username)}`);
+          const j = await r.json();
+          if (j.ok) holdings = j.holdings || j.positions || [];
+        } catch (_) {}
+
+        if (!latestStocksBySymbol || Object.keys(latestStocksBySymbol).length === 0) {
+          try { await loadAllStocks(); } catch (_) {}
+        }
+
+        const norm = [];
+        for (const h of holdings) {
+          const sym = String(h.symbol || h.ticker || h.stock || "").trim().toUpperCase();
+          const shares = Number(h.shares ?? h.qty ?? h.amount ?? h.amt ?? 0);
+          if (!sym || !Number.isFinite(shares) || shares <= 0) continue;
+          norm.push({ sym, shares });
+        }
+
+        if (!norm.length) {
+          holdingsEl.textContent = "None";
+          mvEl.textContent = "$0.00";
+          nwEl.textContent = `$${(Number(latestBalance)||0).toFixed(2)}`;
+          return;
+        }
+
+        norm.sort((a,b) => a.sym.localeCompare(b.sym));
+        holdingsEl.textContent = norm.map(h => `${h.sym}: ${Math.trunc(h.shares)}`).join(", ");
+
+        let mv = 0;
+        for (const h of norm) {
+          const s = latestStocksBySymbol[h.sym];
+          const price = s ? Number(s.price) : 0;
+          if (Number.isFinite(price)) mv += price * h.shares;
+        }
+        mvEl.textContent = `$${mv.toFixed(2)}`;
+        nwEl.textContent = `$${((Number(latestBalance)||0) + mv).toFixed(2)}`;
+      }
+
+      async function doTrade(side) {
+        const qtyRaw = document.getElementById("tradeQty")?.value;
+        const qty = parseInt(qtyRaw, 10);
+
+        if (!username) return setTradeMsg("Missing username.", false);
+        if (!symbol) return setTradeMsg("Missing symbol.", false);
+        if (!Number.isFinite(qty) || qty <= 0) return setTradeMsg("Enter a positive quantity.", false);
+
+        const endpoint = side === "sell" ? "/sell" : "/buy";
+
+        setTradeMsg("Sending...", true);
+        let j;
+        try {
+          const r = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, symbol, qty }),
+          });
+          j = await r.json();
+        } catch (e) {
+          return setTradeMsg("Network error.", false);
+        }
+
+        if (j && j.ok) {
+          setTradeMsg(side === "sell" ? "Sold." : "Bought.", true);
+          await loadUser();
+          await loadAllStocks();
+          await loadPortfolioSummary();
+          await loadStock();
+          await loadHistory();
+        } else {
+          setTradeMsg((j && (j.error || j.message)) || "Trade failed.", false);
         }
       }
 
@@ -108,10 +223,17 @@
         Plotly.react("chart", [trace], layout, { displayModeBar: false, responsive: true });
       }
 
+      document.getElementById("buyBtn").addEventListener("click", () => doTrade("buy"));
+      document.getElementById("sellBtn").addEventListener("click", () => doTrade("sell"));
+
       loadUser();
       loadStock();
+      loadAllStocks();
+      loadPortfolioSummary();
       loadHistory();
       setInterval(loadUser, 2000);
+      setInterval(loadAllStocks, 2000);
+      setInterval(loadPortfolioSummary, 2000);
       setInterval(loadStock, 2000);
       setInterval(loadHistory, 5000);
     </script>

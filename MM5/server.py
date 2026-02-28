@@ -5,6 +5,7 @@ import random
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs, quote
+from urllib.parse import parse_qs as _parse_qs
 
 DB_NAME = "users.db"
 NEWS_DB_NAME = "news.db"
@@ -102,6 +103,27 @@ def init_stock_prices_db(db_path: Path) -> None:
         conn.close()
 
 
+def init_holdings_db(db_path: Path) -> None:
+    """User holdings: (username,symbol)->shares."""
+    conn = sqlite3.connect(db_path)
+    try:
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS holdings (
+                username TEXT NOT NULL,
+                symbol TEXT NOT NULL,
+                shares INTEGER NOT NULL DEFAULT 0,
+                PRIMARY KEY (username, symbol),
+                FOREIGN KEY (username) REFERENCES users(username),
+                FOREIGN KEY (symbol) REFERENCES stocks(symbol)
+            )
+            """
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
 def seed_stocks_if_empty(db_path: Path) -> None:
     stocks_seed = [
         ("AAPL", "Apple Inc.", "Tech", 184.22),
@@ -163,7 +185,6 @@ def normalise_username(raw: str) -> str:
     u = raw.strip()
     if not u:
         return ""
-
     allowed = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     u = "".join(ch for ch in u if ch in allowed)
     return u[:24]
@@ -231,37 +252,11 @@ def generate_news_for_turn(events_bank: list[dict], k_min: int = 1, k_max: int =
     return [random.choice(events_bank) for _ in range(k)]
 
 
-
 def tick_stock_market(users_db_path: str, news_items: list[dict], time_value: int) -> None:
     """Advance all stock prices by one tick and append history.
 
-    News effects schema (v1):
-      Each generated news item may contain:
-        effects: {
-          "stocks": [
-            {
-              "symbol": "NVDA",
-              "ret_mu": -0.002,          # additive drift to return this tick (eg -0.2%)
-              "ret_sigma_mult": 1.2,     # multiplies the base return draw's volatility
-              "shock": -0.01             # additive one-off shock return (eg -1%)
-            }
-          ]
-        }
-
-    Any missing keys are treated as neutral. If "stocks" is absent, the item has no stock effects.
+    NOTE: news integration stub, you can wire effects here once schema is final.
     """
-    # Collect per-symbol effects (we apply them in aggregate below).
-    effects_by_symbol: dict[str, list[dict]] = {}
-    for item in (news_items or []):
-        effects = item.get("effects") or {}
-        stock_effects = effects.get("stocks") or []
-        if isinstance(stock_effects, list):
-            for eff in stock_effects:
-                sym = str(eff.get("symbol", "")).strip().upper()
-                if not sym:
-                    continue
-                effects_by_symbol.setdefault(sym, []).append(eff)
-
     conn = sqlite3.connect(users_db_path)
     try:
         cur = conn.cursor()
@@ -270,36 +265,8 @@ def tick_stock_market(users_db_path: str, news_items: list[dict], time_value: in
         for sym, old_price in rows:
             price = float(old_price)
 
-            # Base move: small random return with mild tails.
-            base_ret = random.gauss(0.0, 0.015)
-
-            # Apply all effects targeting this symbol.
-            mu_add = 0.0
-            shock_add = 0.0
-            sigma_mult = 1.0
-
-            for eff in effects_by_symbol.get(sym, []):
-                try:
-                    mu_add += float(eff.get("ret_mu", 0.0) or 0.0)
-                except Exception:
-                    pass
-                try:
-                    shock_add += float(eff.get("shock", 0.0) or 0.0)
-                except Exception:
-                    pass
-                try:
-                    sigma_mult *= float(eff.get("ret_sigma_mult", 1.0) or 1.0)
-                except Exception:
-                    pass
-
-            ret = base_ret * sigma_mult + mu_add + shock_add
-
-            # Safety clamp (prevents single-tick nukes while still allowing drama).
-            if ret > 0.25:
-                ret = 0.25
-            elif ret < -0.25:
-                ret = -0.25
-
+            # basic random walk for now
+            ret = random.gauss(0.0, 0.015)
             new_price = max(0.01, price * (1.0 + ret))
 
             cur.execute(
@@ -314,6 +281,18 @@ def tick_stock_market(users_db_path: str, news_items: list[dict], time_value: in
         conn.commit()
     finally:
         conn.close()
+
+
+def _get_stock_price(cur, symbol: str) -> float | None:
+    row = cur.execute("SELECT price FROM stocks WHERE symbol = ?", (symbol,)).fetchone()
+    if not row:
+        return None
+    return float(row[0])
+
+
+def _round_cost(price: float, qty: int) -> int:
+    # Balance is INTEGER, so we round the total dollars for this playtest.
+    return int(round(price * qty))
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -346,7 +325,7 @@ class Handler(SimpleHTTPRequestHandler):
                     "time_string": format_time(TIME),
                 }
 
-            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Type", "application/json; charset=utf-8")
             self.end_headers()
             self.wfile.write(json.dumps(payload).encode("utf-8"))
             return
@@ -360,7 +339,7 @@ class Handler(SimpleHTTPRequestHandler):
 
             self.send_response(200)
             payload = {"ok": True, "users": [{"username": r[0], "balance": r[1]} for r in rows]}
-            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Type", "application/json; charset=utf-8")
             self.end_headers()
             self.wfile.write(json.dumps(payload).encode("utf-8"))
             return
@@ -397,7 +376,7 @@ class Handler(SimpleHTTPRequestHandler):
 
             self.send_response(200)
             payload = {"ok": True, "time": time_value, "time_string": format_time(time_value), "items": items}
-            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Type", "application/json; charset=utf-8")
             self.end_headers()
             self.wfile.write(json.dumps(payload).encode("utf-8"))
             return
@@ -423,7 +402,7 @@ class Handler(SimpleHTTPRequestHandler):
 
             self.send_response(200)
             payload = {"ok": True, "time": TIME, "time_string": format_time(TIME), "stocks": stocks}
-            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Type", "application/json; charset=utf-8")
             self.end_headers()
             self.wfile.write(json.dumps(payload).encode("utf-8"))
             return
@@ -460,7 +439,7 @@ class Handler(SimpleHTTPRequestHandler):
                 }
                 self.send_response(200)
 
-            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Type", "application/json; charset=utf-8")
             self.end_headers()
             self.wfile.write(json.dumps(payload).encode("utf-8"))
             return
@@ -483,14 +462,73 @@ class Handler(SimpleHTTPRequestHandler):
             finally:
                 conn.close()
 
-            # reverse to ascending time for plotting
             series = []
             for t, price in reversed(rows):
                 series.append({"time": int(t), "time_string": format_time(int(t)), "price": float(price)})
 
             self.send_response(200)
             payload = {"ok": True, "symbol": symbol, "time": TIME, "time_string": format_time(TIME), "series": series}
-            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(json.dumps(payload).encode("utf-8"))
+            return
+
+        if u.path == "/holdings":
+            qs = parse_qs(u.query)
+            username = normalise_username((qs.get("username") or [""])[0])
+            if not username:
+                self.send_response(400)
+                payload = {"ok": False, "error": "missing username"}
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.end_headers()
+                self.wfile.write(json.dumps(payload).encode("utf-8"))
+                return
+
+            conn = sqlite3.connect(self.server.users_db_path)
+            try:
+                # ensure user exists
+                urow = conn.execute("SELECT balance FROM users WHERE username = ?", (username,)).fetchone()
+                if not urow:
+                    self.send_response(404)
+                    payload = {"ok": False, "error": "user not found"}
+                else:
+                    rows = conn.execute(
+                        """
+                        SELECT h.symbol, h.shares, s.name, s.industry, s.price
+                        FROM holdings h
+                        JOIN stocks s ON s.symbol = h.symbol
+                        WHERE h.username = ?
+                        ORDER BY s.industry, h.symbol
+                        """,
+                        (username,),
+                    ).fetchall()
+                    holdings = []
+                    total_value = 0.0
+                    for sym, shares, name, industry, price in rows:
+                        value = float(price) * int(shares)
+                        total_value += value
+                        holdings.append({
+                            "symbol": sym,
+                            "shares": int(shares),
+                            "name": name,
+                            "industry": industry,
+                            "price": float(price),
+                            "value": value,
+                        })
+                    self.send_response(200)
+                    payload = {
+                        "ok": True,
+                        "username": username,
+                        "balance": int(urow[0]),
+                        "time": TIME,
+                        "time_string": format_time(TIME),
+                        "total_value": total_value,
+                        "holdings": holdings,
+                    }
+            finally:
+                conn.close()
+
+            self.send_header("Content-Type", "application/json; charset=utf-8")
             self.end_headers()
             self.wfile.write(json.dumps(payload).encode("utf-8"))
             return
@@ -499,13 +537,12 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_POST(self):
         global TIME
-
         u = urlparse(self.path)
 
         if u.path == "/admin":
             if not is_localhost(self):
                 self.send_response(403)
-                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Type", "application/json; charset=utf-8")
                 self.end_headers()
                 self.wfile.write(json.dumps({"ok": False, "error": "forbidden"}).encode("utf-8"))
                 return
@@ -545,7 +582,6 @@ class Handler(SimpleHTTPRequestHandler):
                         new_balance = int(row[0]) + int(delta)
                         users_cur.execute("UPDATE users SET balance = ? WHERE username = ?", (new_balance, username))
                         users_conn.commit()
-
                         self.send_response(200)
                         payload = {"ok": True, "cmd": cmd, "username": username, "balance": new_balance}
 
@@ -558,8 +594,6 @@ class Handler(SimpleHTTPRequestHandler):
                         TIME += 1
                         new_items = generate_news_for_turn(self.server.news_events_bank)
                         insert_news_items(self.server.news_db_path, TIME, new_items)
-
-                        # tie market tick to the same endpoint, with access to this turn's news
                         tick_stock_market(self.server.users_db_path, new_items, TIME)
 
                     self.send_response(200)
@@ -572,16 +606,231 @@ class Handler(SimpleHTTPRequestHandler):
             finally:
                 users_conn.close()
 
-            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Type", "application/json; charset=utf-8")
             self.end_headers()
             self.wfile.write(json.dumps(payload).encode("utf-8"))
             return
 
-        # login form at /
-        if u.path == "/login":
+        if u.path == "/transfer":
+            data = read_json_body(self)
+
+            from_user = normalise_username(str(data.get("from", "")))
+            to_user = normalise_username(str(data.get("to", "")))
+            try:
+                amount = int(data.get("amount", 0))
+            except Exception:
+                amount = 0
+
+            if not from_user or not to_user:
+                self.send_response(400)
+                payload = {"ok": False, "error": "missing user"}
+            elif from_user == to_user:
+                self.send_response(400)
+                payload = {"ok": False, "error": "cannot send to yourself"}
+            elif amount <= 0:
+                self.send_response(400)
+                payload = {"ok": False, "error": "amount must be positive"}
+            else:
+                conn = sqlite3.connect(self.server.users_db_path)
+                try:
+                    cur = conn.cursor()
+                    cur.execute("BEGIN IMMEDIATE")
+
+                    row_from = cur.execute("SELECT balance FROM users WHERE username = ?", (from_user,)).fetchone()
+                    row_to = cur.execute("SELECT balance FROM users WHERE username = ?", (to_user,)).fetchone()
+
+                    if not row_from or not row_to:
+                        conn.rollback()
+                        self.send_response(404)
+                        payload = {"ok": False, "error": "unknown user"}
+                    elif int(row_from[0]) < amount:
+                        conn.rollback()
+                        self.send_response(400)
+                        payload = {"ok": False, "error": "insufficient funds"}
+                    else:
+                        cur.execute("UPDATE users SET balance = balance - ? WHERE username = ?", (amount, from_user))
+                        cur.execute("UPDATE users SET balance = balance + ? WHERE username = ?", (amount, to_user))
+
+                        new_from = cur.execute("SELECT balance FROM users WHERE username = ?", (from_user,)).fetchone()[0]
+                        new_to = cur.execute("SELECT balance FROM users WHERE username = ?", (to_user,)).fetchone()[0]
+                        conn.commit()
+
+                        self.send_response(200)
+                        payload = {
+                            "ok": True,
+                            "from": from_user,
+                            "to": to_user,
+                            "amount": amount,
+                            "from_balance": new_from,
+                            "to_balance": new_to,
+                        }
+                finally:
+                    conn.close()
+
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(json.dumps(payload).encode("utf-8"))
+            return
+
+        if u.path == "/buy":
+            data = read_json_body(self)
+            username = normalise_username(str(data.get("username", "")))
+            symbol = str(data.get("symbol", "")).strip().upper()
+            try:
+                qty = int(data.get("qty", 0))
+            except Exception:
+                qty = 0
+
+            if not username or not symbol:
+                self.send_response(400)
+                payload = {"ok": False, "error": "missing username or symbol"}
+            elif qty <= 0:
+                self.send_response(400)
+                payload = {"ok": False, "error": "qty must be positive"}
+            else:
+                conn = sqlite3.connect(self.server.users_db_path)
+                try:
+                    cur = conn.cursor()
+                    cur.execute("BEGIN IMMEDIATE")
+
+                    urow = cur.execute("SELECT balance FROM users WHERE username = ?", (username,)).fetchone()
+                    if not urow:
+                        conn.rollback()
+                        self.send_response(404)
+                        payload = {"ok": False, "error": "user not found"}
+                    else:
+                        price = _get_stock_price(cur, symbol)
+                        if price is None:
+                            conn.rollback()
+                            self.send_response(404)
+                            payload = {"ok": False, "error": "stock not found"}
+                        else:
+                            cost = _round_cost(price, qty)
+                            bal = int(urow[0])
+                            if bal < cost:
+                                conn.rollback()
+                                self.send_response(400)
+                                payload = {"ok": False, "error": "insufficient funds", "balance": bal, "cost": cost}
+                            else:
+                                cur.execute("UPDATE users SET balance = balance - ? WHERE username = ?", (cost, username))
+                                cur.execute(
+                                    "INSERT INTO holdings(username, symbol, shares) VALUES(?,?,?) "
+                                    "ON CONFLICT(username, symbol) DO UPDATE SET shares = shares + excluded.shares",
+                                    (username, symbol, qty),
+                                )
+                                new_bal = cur.execute("SELECT balance FROM users WHERE username = ?", (username,)).fetchone()[0]
+                                new_shares = cur.execute(
+                                    "SELECT shares FROM holdings WHERE username = ? AND symbol = ?",
+                                    (username, symbol),
+                                ).fetchone()[0]
+                                conn.commit()
+                                self.send_response(200)
+                                payload = {
+                                    "ok": True,
+                                    "username": username,
+                                    "symbol": symbol,
+                                    "qty": qty,
+                                    "price": price,
+                                    "cost": cost,
+                                    "balance": int(new_bal),
+                                    "shares": int(new_shares),
+                                    "time": TIME,
+                                    "time_string": format_time(TIME),
+                                }
+                finally:
+                    conn.close()
+
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(json.dumps(payload).encode("utf-8"))
+            return
+
+        if u.path == "/sell":
+            data = read_json_body(self)
+            username = normalise_username(str(data.get("username", "")))
+            symbol = str(data.get("symbol", "")).strip().upper()
+            try:
+                qty = int(data.get("qty", 0))
+            except Exception:
+                qty = 0
+
+            if not username or not symbol:
+                self.send_response(400)
+                payload = {"ok": False, "error": "missing username or symbol"}
+            elif qty <= 0:
+                self.send_response(400)
+                payload = {"ok": False, "error": "qty must be positive"}
+            else:
+                conn = sqlite3.connect(self.server.users_db_path)
+                try:
+                    cur = conn.cursor()
+                    cur.execute("BEGIN IMMEDIATE")
+
+                    urow = cur.execute("SELECT balance FROM users WHERE username = ?", (username,)).fetchone()
+                    if not urow:
+                        conn.rollback()
+                        self.send_response(404)
+                        payload = {"ok": False, "error": "user not found"}
+                    else:
+                        price = _get_stock_price(cur, symbol)
+                        if price is None:
+                            conn.rollback()
+                            self.send_response(404)
+                            payload = {"ok": False, "error": "stock not found"}
+                        else:
+                            hrow = cur.execute(
+                                "SELECT shares FROM holdings WHERE username = ? AND symbol = ?",
+                                (username, symbol),
+                            ).fetchone()
+                            if not hrow:
+                                conn.rollback()
+                                self.send_response(400)
+                                payload = {"ok": False, "error": "no shares to sell"}
+                            else:
+                                have = int(hrow[0])
+                                if have < qty:
+                                    conn.rollback()
+                                    self.send_response(400)
+                                    payload = {"ok": False, "error": "not enough shares", "shares": have}
+                                else:
+                                    proceeds = _round_cost(price, qty)
+                                    cur.execute("UPDATE users SET balance = balance + ? WHERE username = ?", (proceeds, username))
+                                    remaining = have - qty
+                                    if remaining == 0:
+                                        cur.execute("DELETE FROM holdings WHERE username = ? AND symbol = ?", (username, symbol))
+                                    else:
+                                        cur.execute(
+                                            "UPDATE holdings SET shares = ? WHERE username = ? AND symbol = ?",
+                                            (remaining, username, symbol),
+                                        )
+                                    new_bal = cur.execute("SELECT balance FROM users WHERE username = ?", (username,)).fetchone()[0]
+                                    conn.commit()
+                                    self.send_response(200)
+                                    payload = {
+                                        "ok": True,
+                                        "username": username,
+                                        "symbol": symbol,
+                                        "qty": qty,
+                                        "price": price,
+                                        "proceeds": proceeds,
+                                        "balance": int(new_bal),
+                                        "shares": int(remaining),
+                                        "time": TIME,
+                                        "time_string": format_time(TIME),
+                                    }
+                finally:
+                    conn.close()
+
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(json.dumps(payload).encode("utf-8"))
+            return
+
+        # login/register form at /
+        if u.path in ("/login", "/register"):
             length = int(self.headers.get("Content-Length", "0"))
             body = self.rfile.read(length).decode("utf-8", errors="replace")
-            form = parse_qs(body)
+            form = _parse_qs(body)
 
             raw_username = (form.get("username") or [""])[0]
             username = normalise_username(raw_username)
@@ -589,7 +838,9 @@ class Handler(SimpleHTTPRequestHandler):
             if not username:
                 self.send_response(303)
                 self.send_header("Location", "/")
+                self.send_header("Content-Type", "text/html; charset=utf-8")
                 self.end_headers()
+                self.wfile.write(b'<!doctype html><meta charset="utf-8"><a href="/">Redirecting...</a>')
                 return
 
             conn = sqlite3.connect(self.server.users_db_path)
@@ -604,7 +855,13 @@ class Handler(SimpleHTTPRequestHandler):
 
             self.send_response(303)
             self.send_header("Location", f"/dashboard.html?username={quote(username)}")
+            self.send_header("Content-Type", "text/html; charset=utf-8")
             self.end_headers()
+            self.wfile.write(
+                b'<!doctype html><meta charset="utf-8"><a href="/dashboard.html?username='
+                + quote(username).encode("utf-8")
+                + b'">Redirecting...</a>'
+            )
             return
 
         self.send_response(404)
@@ -616,9 +873,8 @@ class Handler(SimpleHTTPRequestHandler):
         except Exception:
             path = self.path
 
-        if path in ("/user", "/users", "/news", "/stocks", "/stock", "/stock_history"):
+        if path in ("/user", "/users", "/news", "/stocks", "/stock", "/stock_history", "/holdings"):
             return
-
         super().log_message(format, *args)
 
 
@@ -639,12 +895,10 @@ def main() -> None:
     init_users_db(users_db_path)
     init_news_db(news_db_path)
 
-    # stocks + history live in users.db
     init_stocks_db(users_db_path)
     init_stock_prices_db(users_db_path)
+    init_holdings_db(users_db_path)
     seed_stocks_if_empty(users_db_path)
-
-    # ensure time-0 history exists
     ensure_history_at_time(users_db_path, TIME)
 
     events_bank = load_news_events(projroot)

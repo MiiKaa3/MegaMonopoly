@@ -1,6 +1,10 @@
 const params = new URLSearchParams(location.search);
 const username = params.get("username") || "";
 
+
+let latestBalance = 0;
+let latestStocksBySymbol = {}; // {SYM: {price, prev_price, ...}}
+
 document.getElementById("u").textContent = username || "?";
 
 async function loadUser() {
@@ -11,6 +15,7 @@ async function loadUser() {
 
   if (j.ok) {
     document.getElementById("bal").textContent = j.balance;
+    latestBalance = Number(j.balance) || 0;
     document.getElementById("t").textContent = j.time_string;
   } else {
     document.getElementById("bal").textContent = "unknown";
@@ -216,6 +221,11 @@ async function loadStocks() {
   const j = await r.json();
   if (!j.ok || !Array.isArray(j.stocks)) return;
   for (const s of j.stocks) applyStockToElement(s);
+  latestStocksBySymbol = {};
+  for (const s of j.stocks) {
+    latestStocksBySymbol[s.symbol] = s;
+    applyStockToElement(s);
+  }
 }
 
 function initStockClicks() {
@@ -234,6 +244,57 @@ function initStockClicks() {
   }
 }
 
+async function loadPortfolioSummary() {
+  const holdingsEl = document.getElementById("holdingsLine");
+  const mvEl = document.getElementById("marketValue");
+  const nwEl = document.getElementById("netWorth");
+  if (!holdingsEl || !mvEl || !nwEl) return;
+  if (!username) return;
+
+  // Fetch holdings
+  let holdings = [];
+  try {
+    const r = await fetch(`/holdings?username=${encodeURIComponent(username)}`);
+    const j = await r.json();
+    if (j.ok) holdings = j.holdings || j.positions || [];
+  } catch (_) {}
+
+  // Ensure we have prices
+  if (!latestStocksBySymbol || Object.keys(latestStocksBySymbol).length === 0) {
+    try { await loadStocks(); } catch (_) {}
+  }
+
+  // Normalise holdings rows
+  const norm = [];
+  for (const h of holdings) {
+    const sym = String(h.symbol || h.ticker || h.stock || "").trim().toUpperCase();
+    const shares = Number(h.shares ?? h.qty ?? h.amount ?? h.amt ?? 0);
+    if (!sym || !Number.isFinite(shares) || shares <= 0) continue;
+    norm.push({ sym, shares });
+  }
+
+  if (!norm.length) {
+    holdingsEl.textContent = "None";
+    mvEl.textContent = "$0.00";
+    nwEl.textContent = `$${(Number(latestBalance) || 0).toFixed(2)}`;
+    return;
+  }
+
+  norm.sort((a, b) => a.sym.localeCompare(b.sym));
+  holdingsEl.textContent = norm.map(h => `${h.sym}: ${Math.trunc(h.shares)}`).join(", ");
+
+  // Compute market value using latestStocksBySymbol prices
+  let mv = 0;
+  for (const h of norm) {
+    const s = latestStocksBySymbol[h.sym];
+    const price = s ? Number(s.price) : 0;
+    if (Number.isFinite(price)) mv += price * h.shares;
+  }
+
+  mvEl.textContent = `$${mv.toFixed(2)}`;
+  nwEl.textContent = `$${((Number(latestBalance) || 0) + mv).toFixed(2)}`;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   initNewsTicker();
   indexStockElements();
@@ -241,6 +302,8 @@ document.addEventListener("DOMContentLoaded", () => {
   loadStocks();
   setInterval(refreshTickerHeadlines, 6000);
   setInterval(loadStocks, 2000);
+  loadPortfolioSummary();
+  setInterval(loadPortfolioSummary, 2000);
 });
 loadUser();
 setInterval(loadUser, 2000);
