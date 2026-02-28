@@ -25,6 +25,8 @@ async function loadUser() {
 
 async function loadUsersForDropdown() {
   const sel = document.getElementById("sendTo");
+  if (!sel) return;
+
   sel.innerHTML = "";
 
   const r = await fetch("/users");
@@ -32,11 +34,20 @@ async function loadUsersForDropdown() {
 
   if (!j.ok) return;
 
-  for (const u of j.users) {
-    if (u === username) continue; // don't let people send to themselves
+  // Accept both: ["alice","bob"] and [{username:"alice"}, {username:"bob"}]
+  const names = (j.users || [])
+    .map(u => {
+      if (typeof u === "string") return u;
+      if (u && typeof u === "object") return u.username || u.name || u.user || u.handle || "";
+      return "";
+    })
+    .filter(Boolean);
+
+  for (const name of names) {
+    if (name === username) continue; // don't let people send to themselves
     const opt = document.createElement("option");
-    opt.value = u;
-    opt.textContent = u;
+    opt.value = name;
+    opt.textContent = name;
     sel.appendChild(opt);
   }
 }
