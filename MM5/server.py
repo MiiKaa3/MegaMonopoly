@@ -231,22 +231,33 @@ def generate_news_for_turn(events_bank: list[dict], k_min: int = 1, k_max: int =
     return [random.choice(events_bank) for _ in range(k)]
 
 
+
 def tick_stock_market(users_db_path: str, news_items: list[dict], time_value: int) -> None:
     """Advance all stock prices by one tick and append history.
 
-    News integration stub: we parse effects, but currently do nothing with them.
+    News effects schema (v1):
+      Each generated news item may contain:
+        effects: {
+          "stocks": [
+            {
+              "symbol": "NVDA",
+              "ret_mu": -0.002,          # additive drift to return this tick (eg -0.2%)
+              "ret_sigma_mult": 1.2,     # multiplies the base return draw's volatility
+              "shock": -0.01             # additive one-off shock return (eg -1%)
+            }
+          ]
+        }
+
+    Any missing keys are treated as neutral. If "stocks" is absent, the item has no stock effects.
     """
-    # collect per-symbol effects (currently unused)
+    # Collect per-symbol effects (we apply them in aggregate below).
     effects_by_symbol: dict[str, list[dict]] = {}
     for item in (news_items or []):
         effects = item.get("effects") or {}
         stock_effects = effects.get("stocks") or []
         if isinstance(stock_effects, list):
             for eff in stock_effects:
-                try:
-                    sym = str(eff.get("symbol", "")).strip().upper()
-                except Exception:
-                    sym = ""
+                sym = str(eff.get("symbol", "")).strip().upper()
                 if not sym:
                     continue
                 effects_by_symbol.setdefault(sym, []).append(eff)
@@ -255,14 +266,40 @@ def tick_stock_market(users_db_path: str, news_items: list[dict], time_value: in
     try:
         cur = conn.cursor()
         rows = cur.execute("SELECT symbol, price FROM stocks").fetchall()
-        # Simple market move for now (until we fully DB-drive your Market/Stock objects)
+
         for sym, old_price in rows:
             price = float(old_price)
 
-            # Placeholder: later loop effects_by_symbol.get(sym, []) here
+            # Base move: small random return with mild tails.
+            base_ret = random.gauss(0.0, 0.015)
 
-            # Random return in roughly +/-3% range with heavier tails
-            ret = random.gauss(0.0, 0.015)
+            # Apply all effects targeting this symbol.
+            mu_add = 0.0
+            shock_add = 0.0
+            sigma_mult = 1.0
+
+            for eff in effects_by_symbol.get(sym, []):
+                try:
+                    mu_add += float(eff.get("ret_mu", 0.0) or 0.0)
+                except Exception:
+                    pass
+                try:
+                    shock_add += float(eff.get("shock", 0.0) or 0.0)
+                except Exception:
+                    pass
+                try:
+                    sigma_mult *= float(eff.get("ret_sigma_mult", 1.0) or 1.0)
+                except Exception:
+                    pass
+
+            ret = base_ret * sigma_mult + mu_add + shock_add
+
+            # Safety clamp (prevents single-tick nukes while still allowing drama).
+            if ret > 0.25:
+                ret = 0.25
+            elif ret < -0.25:
+                ret = -0.25
+
             new_price = max(0.01, price * (1.0 + ret))
 
             cur.execute(
@@ -540,8 +577,8 @@ class Handler(SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps(payload).encode("utf-8"))
             return
 
-        # login/register form at /
-        if u.path in ("/login", "/register"):
+        # login form at /
+        if u.path == "/login":
             length = int(self.headers.get("Content-Length", "0"))
             body = self.rfile.read(length).decode("utf-8", errors="replace")
             form = parse_qs(body)
@@ -552,9 +589,7 @@ class Handler(SimpleHTTPRequestHandler):
             if not username:
                 self.send_response(303)
                 self.send_header("Location", "/")
-                self.send_header("Content-Type", "text/html; charset=utf-8")
                 self.end_headers()
-                self.wfile.write(b'<!doctype html><meta charset="utf-8"><a href="/">Redirecting...</a>')
                 return
 
             conn = sqlite3.connect(self.server.users_db_path)
@@ -569,9 +604,7 @@ class Handler(SimpleHTTPRequestHandler):
 
             self.send_response(303)
             self.send_header("Location", f"/dashboard.html?username={quote(username)}")
-            self.send_header("Content-Type", "text/html; charset=utf-8")
             self.end_headers()
-            self.wfile.write(b'<!doctype html><meta charset="utf-8"><a href="/dashboard.html?username=' + quote(username).encode("utf-8") + b'">Redirecting...</a>')
             return
 
         self.send_response(404)
