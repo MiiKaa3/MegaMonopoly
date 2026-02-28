@@ -82,5 +82,349 @@
         }
       ]
     }
+  },
+  {
+    "headline": "Cloud outage disrupts enterprise systems",
+    "body": "A regional data-centre incident triggered intermittent service failures for several hours. Firms report delayed workflows, while vendors promise fixes and credits.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "MSFT",
+          "ret_mu": -0.0018,
+          "ret_sigma_mult": 1.35,
+          "shock": -0.012
+        },
+        {
+          "symbol": "GOOGL",
+          "ret_mu": -0.0012,
+          "ret_sigma_mult": 1.25,
+          "shock": -0.007
+        },
+        {
+          "symbol": "AAPL",
+          "ret_mu": -0.0008,
+          "ret_sigma_mult": 1.15,
+          "shock": -0.004
+        }
+      ]
+    }
+  },
+  {
+    "headline": "AI chip demand surprises to the upside",
+    "body": "Major hyperscalers sign new accelerator orders ahead of schedule. Supply remains tight, but forward guidance points to stronger utilisation through the year.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "NVDA",
+          "ret_mu": 0.0028,
+          "ret_sigma_mult": 1.45,
+          "shock": 0.018
+        },
+        {
+          "symbol": "MSFT",
+          "ret_mu": 0.0013,
+          "ret_sigma_mult": 1.15,
+          "shock": 0.006
+        },
+        {
+          "symbol": "GOOGL",
+          "ret_mu": 0.001,
+          "ret_sigma_mult": 1.12,
+          "shock": 0.005
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Major airline order delayed after supplier issue",
+    "body": "A parts quality review has pushed back delivery timelines for several narrow-body aircraft. Airlines warn of capacity constraints, and manufacturers face higher rework costs.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "BA",
+          "ret_mu": -0.0025,
+          "ret_sigma_mult": 1.45,
+          "shock": -0.016
+        },
+        {
+          "symbol": "CAT",
+          "ret_mu": -0.0007,
+          "ret_sigma_mult": 1.1,
+          "shock": -0.003
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Infrastructure stimulus lifts heavy machinery outlook",
+    "body": "Government agencies outline a faster pipeline for roads and ports. Contractors accelerate equipment orders, and backlog visibility improves for industrial suppliers.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "CAT",
+          "ret_mu": 0.0018,
+          "ret_sigma_mult": 1.2,
+          "shock": 0.01
+        },
+        {
+          "symbol": "BA",
+          "ret_mu": 0.0006,
+          "ret_sigma_mult": 1.05,
+          "shock": 0.002
+        },
+        {
+          "symbol": "XOM",
+          "ret_mu": 0.0004,
+          "ret_sigma_mult": 1.05,
+          "shock": 0.001
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Oil output surprise pressures crude prices",
+    "body": "Unexpected production increases and higher inventories weigh on spot crude. Energy names slide as traders reprice near-term cashflows.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "XOM",
+          "ret_mu": -0.0016,
+          "ret_sigma_mult": 1.25,
+          "shock": -0.012
+        },
+        {
+          "symbol": "BHP",
+          "ret_mu": -0.0007,
+          "ret_sigma_mult": 1.1,
+          "shock": -0.004
+        },
+        {
+          "symbol": "RIO",
+          "ret_mu": -0.0007,
+          "ret_sigma_mult": 1.1,
+          "shock": -0.004
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Iron ore rally boosts miners",
+    "body": "Strong steel demand and shipping constraints push iron ore higher. Analysts lift near-term earnings expectations for major diversified miners.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "BHP",
+          "ret_mu": 0.0016,
+          "ret_sigma_mult": 1.2,
+          "shock": 0.011
+        },
+        {
+          "symbol": "RIO",
+          "ret_mu": 0.0017,
+          "ret_sigma_mult": 1.22,
+          "shock": 0.012
+        },
+        {
+          "symbol": "XOM",
+          "ret_mu": 0.0003,
+          "ret_sigma_mult": 1.05,
+          "shock": 0.001
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Credit spreads widen as risk appetite cools",
+    "body": "A sudden risk-off move pushes funding costs higher for lenders and corporates. Bank trading desks see higher volatility and wider bid-ask spreads.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "JPM",
+          "ret_mu": -0.0018,
+          "ret_sigma_mult": 1.3,
+          "shock": -0.011
+        },
+        {
+          "symbol": "GS",
+          "ret_mu": -0.002,
+          "ret_sigma_mult": 1.35,
+          "shock": -0.013
+        },
+        {
+          "symbol": "V",
+          "ret_mu": -0.001,
+          "ret_sigma_mult": 1.2,
+          "shock": -0.006
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Payments volume accelerates on strong consumer spend",
+    "body": "Card networks report faster cross-border growth and improving transaction counts. Investors interpret the data as a resilient consumer signal.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "V",
+          "ret_mu": 0.0018,
+          "ret_sigma_mult": 1.18,
+          "shock": 0.01
+        },
+        {
+          "symbol": "WMT",
+          "ret_mu": 0.001,
+          "ret_sigma_mult": 1.08,
+          "shock": 0.004
+        },
+        {
+          "symbol": "MCD",
+          "ret_mu": 0.0008,
+          "ret_sigma_mult": 1.08,
+          "shock": 0.003
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Fast-food menu price backlash dents sentiment",
+    "body": "Social media criticism of rising meal prices sparks a short-lived boycott narrative. Management points to promotions, but traders mark down near-term sales momentum.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "MCD",
+          "ret_mu": -0.0013,
+          "ret_sigma_mult": 1.2,
+          "shock": -0.009
+        },
+        {
+          "symbol": "WMT",
+          "ret_mu": 0.0005,
+          "ret_sigma_mult": 1.05,
+          "shock": 0.002
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Meme stock frenzy returns after influencer livestream",
+    "body": "A viral post reignites speculative trading, with options activity surging. Volatility spikes as retail flows dominate short-term price action.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "GME",
+          "ret_mu": 0.0,
+          "ret_sigma_mult": 2.2,
+          "shock": 0.02
+        },
+        {
+          "symbol": "GS",
+          "ret_mu": 0.0004,
+          "ret_sigma_mult": 1.1,
+          "shock": 0.002
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Antitrust victory clears path for tech merger",
+    "body": "A federal judge ruled against the regulator's attempt to block a major acquisition. The decision eases the path for further vertical integration in the software sector.",
+    "effects": {
+      "stocks": [
+        { "symbol": "MSFT", "ret_mu": 0.0018, "ret_sigma_mult": 1.15, "shock": 0.012 },
+        { "symbol": "GOOGL", "ret_mu": 0.0012, "ret_sigma_mult": 1.12, "shock": 0.008 },
+        { "symbol": "AAPL", "ret_mu": 0.0008, "ret_sigma_mult": 1.1, "shock": 0.004 }
+      ]
+    }
+  },
+  {
+    "headline": "Labor strike halts production at major aircraft plants",
+    "body": "Workers walked off the job following a breakdown in contract negotiations. Production of key narrow-body jets is expected to stall for weeks, increasing delivery backlogs.",
+    "effects": {
+      "stocks": [
+        { "symbol": "BA", "ret_mu": -0.0028, "ret_sigma_mult": 1.5, "shock": -0.018 },
+        { "symbol": "CAT", "ret_mu": -0.0005, "ret_sigma_mult": 1.1, "shock": -0.002 }
+      ]
+    }
+  },
+  {
+    "headline": "Global trade pact slashes tariffs on heavy machinery",
+    "body": "A new multilateral agreement reduces import duties on industrial equipment. Export-heavy manufacturers expect a significant boost to international order books.",
+    "effects": {
+      "stocks": [
+        { "symbol": "CAT", "ret_mu": 0.0015, "ret_sigma_mult": 1.15, "shock": 0.009 },
+        { "symbol": "BA", "ret_mu": 0.0008, "ret_sigma_mult": 1.1, "shock": 0.005 }
+      ]
+    }
+  },
+  {
+    "headline": "Cybersecurity breach exposes millions of payment records",
+    "body": "A sophisticated hack targeted a major transaction processor, leaking sensitive cardholder data. Potential fines and loss of consumer trust weigh heavily on the stock.",
+    "effects": {
+      "stocks": [
+        { "symbol": "V", "ret_mu": -0.0022, "ret_sigma_mult": 1.6, "shock": -0.015 },
+        { "symbol": "JPM", "ret_mu": -0.0008, "ret_sigma_mult": 1.2, "shock": -0.004 }
+      ]
+    }
+  },
+  {
+    "headline": "Automated driving software recall triggers safety probe",
+    "body": "Federal safety regulators opened an investigation following a series of technical glitches in the latest software update. The move raises concerns over long-term liability.",
+    "effects": {
+      "stocks": [
+        { "symbol": "TSLA", "ret_mu": -0.0025, "ret_sigma_mult": 1.45, "shock": -0.022 },
+        { "symbol": "NVDA", "ret_mu": -0.0004, "ret_sigma_mult": 1.15, "shock": -0.002 }
+      ]
+    }
+  },
+  {
+    "headline": "Retail giant reports record-breaking holiday sales",
+    "body": "Early data suggests a massive surge in both digital and physical storefront foot traffic. Better-than-expected margins suggest strong pricing power despite inflation.",
+    "effects": {
+      "stocks": [
+        { "symbol": "WMT", "ret_mu": 0.0014, "ret_sigma_mult": 1.1, "shock": 0.011 },
+        { "symbol": "MCD", "ret_mu": 0.0006, "ret_sigma_mult": 1.05, "shock": 0.003 },
+        { "symbol": "V", "ret_mu": 0.0005, "ret_sigma_mult": 1.05, "shock": 0.002 }
+      ]
+    }
+  },
+  {
+    "headline": "Offshore drilling permit freeze rattles energy sector",
+    "body": "A new environmental executive order has suspended the issuance of new drilling leases. Energy firms face uncertainty regarding future production capacity.",
+    "effects": {
+      "stocks": [
+        { "symbol": "XOM", "ret_mu": -0.0018, "ret_sigma_mult": 1.3, "shock": -0.014 },
+        { "symbol": "BHP", "ret_mu": -0.0005, "ret_sigma_mult": 1.1, "shock": -0.002 }
+      ]
+    }
+  },
+  {
+    "headline": "Investment banking revenue surges on IPO boom",
+    "body": "A wave of high-profile public offerings has generated massive advisory fees. Trading desks also benefited from elevated market activity and tight credit spreads.",
+    "effects": {
+      "stocks": [
+        { "symbol": "GS", "ret_mu": 0.0024, "ret_sigma_mult": 1.25, "shock": 0.015 },
+        { "symbol": "JPM", "ret_mu": 0.0016, "ret_sigma_mult": 1.18, "shock": 0.008 }
+      ]
+    }
+  },
+  {
+    "headline": "GME options gamma squeeze sends prices soaring",
+    "body": "A massive influx of retail call buying has forced market makers to hedge aggressively. Volatility has reached extreme levels as the squeeze intensifies.",
+    "effects": {
+      "stocks": [
+        { "symbol": "GME", "ret_mu": 0.0005, "ret_sigma_mult": 3.5, "shock": 0.045 },
+        { "symbol": "GS", "ret_mu": -0.0002, "ret_sigma_mult": 1.2, "shock": -0.001 }
+      ]
+    }
+  },
+  {
+    "headline": "iPhone export ban in emerging market hurts outlook",
+    "body": "Local regulators cited data privacy concerns in a surprise move to block sales of the latest handset. Analysts worry this could signal a trend in the region.",
+    "effects": {
+      "stocks": [
+        { "symbol": "AAPL", "ret_mu": -0.0018, "ret_sigma_mult": 1.3, "shock": -0.012 },
+        { "symbol": "NVDA", "ret_mu": -0.0005, "ret_sigma_mult": 1.1, "shock": -0.003 }
+      ]
+    }
   }
 ]

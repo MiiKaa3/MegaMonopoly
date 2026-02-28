@@ -301,9 +301,9 @@ document.addEventListener("DOMContentLoaded", () => {
   initStockClicks();
   loadStocks();
   setInterval(refreshTickerHeadlines, 6000);
-  setInterval(loadStocks, 2000);
+  setInterval(loadStocks, 1000);
   loadPortfolioSummary();
-  setInterval(loadPortfolioSummary, 2000);
+  setInterval(loadPortfolioSummary, 1000);
 });
 loadUser();
-setInterval(loadUser, 2000);
+setInterval(loadUser, 1000);
