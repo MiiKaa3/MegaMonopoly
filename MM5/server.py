@@ -346,17 +346,42 @@ class Handler(SimpleHTTPRequestHandler):
 
         if u.path == "/news":
             qs = parse_qs(u.query)
+
+            # Backwards compatible:
+            # - If ?time= is provided, return ONLY that quarter (ordered oldest->newest).
+            # - Otherwise, return a feed of the most recent items across all time (newest first).
+            has_time = "time" in qs
+
             try:
-                time_value = int((qs.get("time") or [str(TIME)])[0])
+                limit = int((qs.get("limit") or ["200"])[0])
             except Exception:
-                time_value = TIME
+                limit = 200
+            limit = max(1, min(limit, 2000))
+
+            try:
+                offset = int((qs.get("offset") or ["0"])[0])
+            except Exception:
+                offset = 0
+            offset = max(0, offset)
+
+            if has_time:
+                try:
+                    time_value = int((qs.get("time") or [str(TIME)])[0])
+                except Exception:
+                    time_value = TIME
 
             conn = sqlite3.connect(self.server.news_db_path)
             try:
-                rows = conn.execute(
-                    "SELECT time, headline, body, effects_json FROM news WHERE time = ? ORDER BY id",
-                    (time_value,),
-                ).fetchall()
+                if has_time:
+                    rows = conn.execute(
+                        "SELECT time, headline, body, effects_json FROM news WHERE time = ? ORDER BY id ASC LIMIT ? OFFSET ?",
+                        (time_value, limit, offset),
+                    ).fetchall()
+                else:
+                    rows = conn.execute(
+                        "SELECT time, headline, body, effects_json FROM news ORDER BY id DESC LIMIT ? OFFSET ?",
+                        (limit, offset),
+                    ).fetchall()
             finally:
                 conn.close()
 
@@ -367,15 +392,22 @@ class Handler(SimpleHTTPRequestHandler):
                 except Exception:
                     effects = {}
                 items.append({
-                    "time": t,
-                    "time_string": format_time(t),
+                    "time": int(t),
+                    "time_string": format_time(int(t)),
                     "headline": headline,
                     "body": body,
                     "effects": effects,
                 })
 
             self.send_response(200)
-            payload = {"ok": True, "time": time_value, "time_string": format_time(time_value), "items": items}
+            payload = {
+                "ok": True,
+                "time": TIME if not has_time else time_value,
+                "time_string": format_time(TIME if not has_time else time_value),
+                "limit": limit,
+                "offset": offset,
+                "items": items,
+            }
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self.end_headers()
             self.wfile.write(json.dumps(payload).encode("utf-8"))

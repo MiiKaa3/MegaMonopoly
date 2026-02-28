@@ -330,9 +330,24 @@
     "body": "A federal judge ruled against the regulator's attempt to block a major acquisition. The decision eases the path for further vertical integration in the software sector.",
     "effects": {
       "stocks": [
-        { "symbol": "MSFT", "ret_mu": 0.0018, "ret_sigma_mult": 1.15, "shock": 0.012 },
-        { "symbol": "GOOGL", "ret_mu": 0.0012, "ret_sigma_mult": 1.12, "shock": 0.008 },
-        { "symbol": "AAPL", "ret_mu": 0.0008, "ret_sigma_mult": 1.1, "shock": 0.004 }
+        {
+          "symbol": "MSFT",
+          "ret_mu": 0.0018,
+          "ret_sigma_mult": 1.15,
+          "shock": 0.012
+        },
+        {
+          "symbol": "GOOGL",
+          "ret_mu": 0.0012,
+          "ret_sigma_mult": 1.12,
+          "shock": 0.008
+        },
+        {
+          "symbol": "AAPL",
+          "ret_mu": 0.0008,
+          "ret_sigma_mult": 1.1,
+          "shock": 0.004
+        }
       ]
     }
   },
@@ -341,8 +356,18 @@
     "body": "Workers walked off the job following a breakdown in contract negotiations. Production of key narrow-body jets is expected to stall for weeks, increasing delivery backlogs.",
     "effects": {
       "stocks": [
-        { "symbol": "BA", "ret_mu": -0.0028, "ret_sigma_mult": 1.5, "shock": -0.018 },
-        { "symbol": "CAT", "ret_mu": -0.0005, "ret_sigma_mult": 1.1, "shock": -0.002 }
+        {
+          "symbol": "BA",
+          "ret_mu": -0.0028,
+          "ret_sigma_mult": 1.5,
+          "shock": -0.018
+        },
+        {
+          "symbol": "CAT",
+          "ret_mu": -0.0005,
+          "ret_sigma_mult": 1.1,
+          "shock": -0.002
+        }
       ]
     }
   },
@@ -351,8 +376,18 @@
     "body": "A new multilateral agreement reduces import duties on industrial equipment. Export-heavy manufacturers expect a significant boost to international order books.",
     "effects": {
       "stocks": [
-        { "symbol": "CAT", "ret_mu": 0.0015, "ret_sigma_mult": 1.15, "shock": 0.009 },
-        { "symbol": "BA", "ret_mu": 0.0008, "ret_sigma_mult": 1.1, "shock": 0.005 }
+        {
+          "symbol": "CAT",
+          "ret_mu": 0.0015,
+          "ret_sigma_mult": 1.15,
+          "shock": 0.009
+        },
+        {
+          "symbol": "BA",
+          "ret_mu": 0.0008,
+          "ret_sigma_mult": 1.1,
+          "shock": 0.005
+        }
       ]
     }
   },
@@ -361,8 +396,18 @@
     "body": "A sophisticated hack targeted a major transaction processor, leaking sensitive cardholder data. Potential fines and loss of consumer trust weigh heavily on the stock.",
     "effects": {
       "stocks": [
-        { "symbol": "V", "ret_mu": -0.0022, "ret_sigma_mult": 1.6, "shock": -0.015 },
-        { "symbol": "JPM", "ret_mu": -0.0008, "ret_sigma_mult": 1.2, "shock": -0.004 }
+        {
+          "symbol": "V",
+          "ret_mu": -0.0022,
+          "ret_sigma_mult": 1.6,
+          "shock": -0.015
+        },
+        {
+          "symbol": "JPM",
+          "ret_mu": -0.0008,
+          "ret_sigma_mult": 1.2,
+          "shock": -0.004
+        }
       ]
     }
   },
@@ -371,8 +416,18 @@
     "body": "Federal safety regulators opened an investigation following a series of technical glitches in the latest software update. The move raises concerns over long-term liability.",
     "effects": {
       "stocks": [
-        { "symbol": "TSLA", "ret_mu": -0.0025, "ret_sigma_mult": 1.45, "shock": -0.022 },
-        { "symbol": "NVDA", "ret_mu": -0.0004, "ret_sigma_mult": 1.15, "shock": -0.002 }
+        {
+          "symbol": "TSLA",
+          "ret_mu": -0.0025,
+          "ret_sigma_mult": 1.45,
+          "shock": -0.022
+        },
+        {
+          "symbol": "NVDA",
+          "ret_mu": -0.0004,
+          "ret_sigma_mult": 1.15,
+          "shock": -0.002
+        }
       ]
     }
   },
@@ -381,9 +436,24 @@
     "body": "Early data suggests a massive surge in both digital and physical storefront foot traffic. Better-than-expected margins suggest strong pricing power despite inflation.",
     "effects": {
       "stocks": [
-        { "symbol": "WMT", "ret_mu": 0.0014, "ret_sigma_mult": 1.1, "shock": 0.011 },
-        { "symbol": "MCD", "ret_mu": 0.0006, "ret_sigma_mult": 1.05, "shock": 0.003 },
-        { "symbol": "V", "ret_mu": 0.0005, "ret_sigma_mult": 1.05, "shock": 0.002 }
+        {
+          "symbol": "WMT",
+          "ret_mu": 0.0014,
+          "ret_sigma_mult": 1.1,
+          "shock": 0.011
+        },
+        {
+          "symbol": "MCD",
+          "ret_mu": 0.0006,
+          "ret_sigma_mult": 1.05,
+          "shock": 0.003
+        },
+        {
+          "symbol": "V",
+          "ret_mu": 0.0005,
+          "ret_sigma_mult": 1.05,
+          "shock": 0.002
+        }
       ]
     }
   },
@@ -392,8 +462,18 @@
     "body": "A new environmental executive order has suspended the issuance of new drilling leases. Energy firms face uncertainty regarding future production capacity.",
     "effects": {
       "stocks": [
-        { "symbol": "XOM", "ret_mu": -0.0018, "ret_sigma_mult": 1.3, "shock": -0.014 },
-        { "symbol": "BHP", "ret_mu": -0.0005, "ret_sigma_mult": 1.1, "shock": -0.002 }
+        {
+          "symbol": "XOM",
+          "ret_mu": -0.0018,
+          "ret_sigma_mult": 1.3,
+          "shock": -0.014
+        },
+        {
+          "symbol": "BHP",
+          "ret_mu": -0.0005,
+          "ret_sigma_mult": 1.1,
+          "shock": -0.002
+        }
       ]
     }
   },
@@ -402,8 +482,18 @@
     "body": "A wave of high-profile public offerings has generated massive advisory fees. Trading desks also benefited from elevated market activity and tight credit spreads.",
     "effects": {
       "stocks": [
-        { "symbol": "GS", "ret_mu": 0.0024, "ret_sigma_mult": 1.25, "shock": 0.015 },
-        { "symbol": "JPM", "ret_mu": 0.0016, "ret_sigma_mult": 1.18, "shock": 0.008 }
+        {
+          "symbol": "GS",
+          "ret_mu": 0.0024,
+          "ret_sigma_mult": 1.25,
+          "shock": 0.015
+        },
+        {
+          "symbol": "JPM",
+          "ret_mu": 0.0016,
+          "ret_sigma_mult": 1.18,
+          "shock": 0.008
+        }
       ]
     }
   },
@@ -412,8 +502,18 @@
     "body": "A massive influx of retail call buying has forced market makers to hedge aggressively. Volatility has reached extreme levels as the squeeze intensifies.",
     "effects": {
       "stocks": [
-        { "symbol": "GME", "ret_mu": 0.0005, "ret_sigma_mult": 3.5, "shock": 0.045 },
-        { "symbol": "GS", "ret_mu": -0.0002, "ret_sigma_mult": 1.2, "shock": -0.001 }
+        {
+          "symbol": "GME",
+          "ret_mu": 0.0005,
+          "ret_sigma_mult": 3.5,
+          "shock": 0.045
+        },
+        {
+          "symbol": "GS",
+          "ret_mu": -0.0002,
+          "ret_sigma_mult": 1.2,
+          "shock": -0.001
+        }
       ]
     }
   },
@@ -422,9 +522,929 @@
     "body": "Local regulators cited data privacy concerns in a surprise move to block sales of the latest handset. Analysts worry this could signal a trend in the region.",
     "effects": {
       "stocks": [
-        { "symbol": "AAPL", "ret_mu": -0.0018, "ret_sigma_mult": 1.3, "shock": -0.012 },
-        { "symbol": "NVDA", "ret_mu": -0.0005, "ret_sigma_mult": 1.1, "shock": -0.003 }
+        {
+          "symbol": "AAPL",
+          "ret_mu": -0.0018,
+          "ret_sigma_mult": 1.3,
+          "shock": -0.012
+        },
+        {
+          "symbol": "NVDA",
+          "ret_mu": -0.0005,
+          "ret_sigma_mult": 1.1,
+          "shock": -0.003
+        }
       ]
     }
+  },
+  {
+    "headline": "US-China tariff truce announced at G20 summit",
+    "body": "Leaders from both nations agreed to a 90-day pause on further tariff escalation, with frameworks for broader trade talks to follow. Markets cheered the de-escalation, with tech and industrial names leading the relief rally.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "AAPL",
+          "ret_mu": 0.0022,
+          "ret_sigma_mult": 1.2,
+          "shock": 0.018
+        },
+        {
+          "symbol": "NVDA",
+          "ret_mu": 0.0018,
+          "ret_sigma_mult": 1.2,
+          "shock": 0.015
+        },
+        {
+          "symbol": "CAT",
+          "ret_mu": 0.0014,
+          "ret_sigma_mult": 1.15,
+          "shock": 0.012
+        },
+        {
+          "symbol": "BA",
+          "ret_mu": 0.001,
+          "ret_sigma_mult": 1.1,
+          "shock": 0.008
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Anthropic and Google deepen cloud AI partnership",
+    "body": "A new multi-year agreement expands the deployment of frontier AI models across Google Cloud infrastructure. Analysts see this as a direct challenge to Microsoft's OpenAI integration advantage.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "GOOGL",
+          "ret_mu": 0.0018,
+          "ret_sigma_mult": 1.2,
+          "shock": 0.013
+        },
+        {
+          "symbol": "MSFT",
+          "ret_mu": -0.0008,
+          "ret_sigma_mult": 1.12,
+          "shock": -0.005
+        },
+        {
+          "symbol": "NVDA",
+          "ret_mu": 0.001,
+          "ret_sigma_mult": 1.1,
+          "shock": 0.006
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Quantum computing breakthrough spooks classical encryption vendors",
+    "body": "A research paper from a major university claims a functional fault-tolerant qubit array has cracked a 2048-bit RSA key in under six hours. Cybersecurity analysts warn the finding, if replicated, could upend assumptions across financial and tech infrastructure.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "JPM",
+          "ret_mu": -0.0014,
+          "ret_sigma_mult": 1.35,
+          "shock": -0.009
+        },
+        {
+          "symbol": "GS",
+          "ret_mu": -0.0012,
+          "ret_sigma_mult": 1.3,
+          "shock": -0.008
+        },
+        {
+          "symbol": "GOOGL",
+          "ret_mu": 0.0015,
+          "ret_sigma_mult": 1.25,
+          "shock": 0.011
+        },
+        {
+          "symbol": "MSFT",
+          "ret_mu": 0.001,
+          "ret_sigma_mult": 1.2,
+          "shock": 0.007
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Elon Musk tweets single letter 'X' \u2014 GME surges for no reason",
+    "body": "In what traders are calling a 'context-free catalyst', a one-character post from a high-profile tech CEO sent retail forums into a frenzy. GME options volume hit a three-month high within the hour; analysts are baffled.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "GME",
+          "ret_mu": 0.0,
+          "ret_sigma_mult": 2.8,
+          "shock": 0.038
+        },
+        {
+          "symbol": "TSLA",
+          "ret_mu": 0.0005,
+          "ret_sigma_mult": 1.4,
+          "shock": 0.006
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Arctic shipping route opens early as ice retreats",
+    "body": "Unusually warm conditions have opened the Northern Sea Route weeks ahead of schedule, cutting Asia-Europe shipping times significantly. Mining and energy firms with Arctic exposure stand to benefit from cheaper logistics.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "BHP",
+          "ret_mu": 0.001,
+          "ret_sigma_mult": 1.1,
+          "shock": 0.007
+        },
+        {
+          "symbol": "RIO",
+          "ret_mu": 0.001,
+          "ret_sigma_mult": 1.1,
+          "shock": 0.007
+        },
+        {
+          "symbol": "XOM",
+          "ret_mu": 0.0008,
+          "ret_sigma_mult": 1.1,
+          "shock": 0.005
+        },
+        {
+          "symbol": "CAT",
+          "ret_mu": 0.0005,
+          "ret_sigma_mult": 1.05,
+          "shock": 0.003
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Federal Reserve signals surprise rate cut at emergency session",
+    "body": "Citing deteriorating credit conditions and a weaker-than-expected jobs print, the Fed convened an unscheduled meeting and voted to cut rates by 50 basis points. Financial stocks rallied on cheaper funding costs while energy and materials saw a secondary bid.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "JPM",
+          "ret_mu": 0.0018,
+          "ret_sigma_mult": 1.3,
+          "shock": 0.014
+        },
+        {
+          "symbol": "GS",
+          "ret_mu": 0.002,
+          "ret_sigma_mult": 1.3,
+          "shock": 0.016
+        },
+        {
+          "symbol": "V",
+          "ret_mu": 0.0012,
+          "ret_sigma_mult": 1.15,
+          "shock": 0.009
+        },
+        {
+          "symbol": "XOM",
+          "ret_mu": 0.0006,
+          "ret_sigma_mult": 1.08,
+          "shock": 0.004
+        },
+        {
+          "symbol": "BHP",
+          "ret_mu": 0.0005,
+          "ret_sigma_mult": 1.08,
+          "shock": 0.003
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Nvidia unveils next-gen Blackwell Ultra GPU ahead of schedule",
+    "body": "At a surprise hardware event, Nvidia demonstrated a chip with double the memory bandwidth of the previous generation and aggressive pricing for hyperscaler bulk orders. Competitors scrambled to respond as pre-order queues filled within minutes.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "NVDA",
+          "ret_mu": 0.003,
+          "ret_sigma_mult": 1.5,
+          "shock": 0.025
+        },
+        {
+          "symbol": "MSFT",
+          "ret_mu": 0.0012,
+          "ret_sigma_mult": 1.12,
+          "shock": 0.007
+        },
+        {
+          "symbol": "GOOGL",
+          "ret_mu": 0.001,
+          "ret_sigma_mult": 1.1,
+          "shock": 0.005
+        },
+        {
+          "symbol": "TSLA",
+          "ret_mu": -0.0005,
+          "ret_sigma_mult": 1.1,
+          "shock": -0.003
+        }
+      ]
+    }
+  },
+  {
+    "headline": "McDonald's launches AI-powered dynamic menu pricing",
+    "body": "The fast-food chain confirmed that digital menu boards in pilot locations will use real-time demand data to adjust item prices throughout the day. Consumer advocates immediately cried foul, calling it 'surge pricing for McNuggets', and the backlash trended globally within hours.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "MCD",
+          "ret_mu": -0.0016,
+          "ret_sigma_mult": 1.3,
+          "shock": -0.011
+        },
+        {
+          "symbol": "WMT",
+          "ret_mu": 0.0007,
+          "ret_sigma_mult": 1.05,
+          "shock": 0.003
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Lithium supply glut crushes battery metal prices",
+    "body": "A wave of new Australian and Chilean lithium projects reaching production has flooded the spot market. Prices have fallen to four-year lows, squeezing margins for miners and forcing project deferrals.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "BHP",
+          "ret_mu": -0.0012,
+          "ret_sigma_mult": 1.2,
+          "shock": -0.009
+        },
+        {
+          "symbol": "RIO",
+          "ret_mu": -0.0011,
+          "ret_sigma_mult": 1.2,
+          "shock": -0.008
+        },
+        {
+          "symbol": "TSLA",
+          "ret_mu": 0.0014,
+          "ret_sigma_mult": 1.15,
+          "shock": 0.009
+        },
+        {
+          "symbol": "CAT",
+          "ret_mu": -0.0004,
+          "ret_sigma_mult": 1.05,
+          "shock": -0.002
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Walmart acquires last-mile drone delivery startup for $4B",
+    "body": "The retail giant confirmed a deal to fully absorb a leading autonomous delivery firm, promising 30-minute grocery drops in 40 metro areas by next year. The acquisition is seen as a direct shot at Amazon's logistics dominance.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "WMT",
+          "ret_mu": 0.0016,
+          "ret_sigma_mult": 1.2,
+          "shock": 0.013
+        },
+        {
+          "symbol": "MCD",
+          "ret_mu": -0.0004,
+          "ret_sigma_mult": 1.05,
+          "shock": -0.002
+        },
+        {
+          "symbol": "GOOGL",
+          "ret_mu": -0.0005,
+          "ret_sigma_mult": 1.08,
+          "shock": -0.003
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Boeing 737 MAX recertification suspended in EU",
+    "body": "The European Union Aviation Safety Agency announced it was pausing recertification proceedings following new documentation discrepancies uncovered during audit. The news revives demand concerns and triggers a wave of cancellations from European carriers.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "BA",
+          "ret_mu": -0.003,
+          "ret_sigma_mult": 1.55,
+          "shock": -0.024
+        },
+        {
+          "symbol": "CAT",
+          "ret_mu": -0.0005,
+          "ret_sigma_mult": 1.08,
+          "shock": -0.002
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Goldman Sachs launches its own stablecoin for institutional settlement",
+    "body": "The investment bank unveiled a dollar-pegged digital token designed for real-time institutional settlement, bypassing legacy correspondent banking rails. Regulators confirmed the product received a no-action letter, opening the door for Wall Street peers to follow.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "GS",
+          "ret_mu": 0.0022,
+          "ret_sigma_mult": 1.3,
+          "shock": 0.016
+        },
+        {
+          "symbol": "JPM",
+          "ret_mu": 0.001,
+          "ret_sigma_mult": 1.2,
+          "shock": 0.007
+        },
+        {
+          "symbol": "V",
+          "ret_mu": -0.0012,
+          "ret_sigma_mult": 1.25,
+          "shock": -0.009
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Heatwave shutters Texas data centres for 72 hours",
+    "body": "Record temperatures overwhelmed grid capacity in the Dallas-Fort Worth corridor, forcing emergency load-shedding that took several hyperscaler edge nodes offline. Cloud service latency metrics spiked, and insurers began pricing climate risk into data-centre coverage.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "MSFT",
+          "ret_mu": -0.0014,
+          "ret_sigma_mult": 1.3,
+          "shock": -0.009
+        },
+        {
+          "symbol": "GOOGL",
+          "ret_mu": -0.001,
+          "ret_sigma_mult": 1.25,
+          "shock": -0.007
+        },
+        {
+          "symbol": "NVDA",
+          "ret_mu": -0.0008,
+          "ret_sigma_mult": 1.15,
+          "shock": -0.005
+        },
+        {
+          "symbol": "XOM",
+          "ret_mu": 0.0009,
+          "ret_sigma_mult": 1.1,
+          "shock": 0.005
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Apple Vision Pro 2 teardown reveals all-Nvidia internals",
+    "body": "Repair analysts confirmed that the second-generation spatial computing headset relies heavily on a custom Nvidia SoC for rendering, a sharp departure from Apple's usual in-house silicon strategy. Supply agreement terms were not disclosed, but analysts expect a meaningful volume uplift for Nvidia's automotive and edge division.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "NVDA",
+          "ret_mu": 0.002,
+          "ret_sigma_mult": 1.25,
+          "shock": 0.014
+        },
+        {
+          "symbol": "AAPL",
+          "ret_mu": 0.0008,
+          "ret_sigma_mult": 1.15,
+          "shock": 0.005
+        },
+        {
+          "symbol": "MSFT",
+          "ret_mu": -0.0004,
+          "ret_sigma_mult": 1.05,
+          "shock": -0.002
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Visa card network goes dark for 4 hours in Europe",
+    "body": "A software fault in Visa's European processing hub caused widespread payment declines across the UK, Germany, and France during peak shopping hours. Merchants reported significant lost sales while Visa scrambled to restore service and communicate with banks.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "V",
+          "ret_mu": -0.002,
+          "ret_sigma_mult": 1.5,
+          "shock": -0.016
+        },
+        {
+          "symbol": "JPM",
+          "ret_mu": -0.0005,
+          "ret_sigma_mult": 1.1,
+          "shock": -0.003
+        },
+        {
+          "symbol": "WMT",
+          "ret_mu": -0.0006,
+          "ret_sigma_mult": 1.08,
+          "shock": -0.004
+        },
+        {
+          "symbol": "MCD",
+          "ret_mu": -0.0005,
+          "ret_sigma_mult": 1.08,
+          "shock": -0.003
+        }
+      ]
+    }
+  },
+  {
+    "headline": "DeepSeek open-weights model triggers AI cost rethink",
+    "body": "A Chinese lab released a high-performing reasoning model at a fraction of the training cost of Western rivals. Analysts question whether the industry's GPU demand assumptions need revisiting.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "NVDA",
+          "ret_mu": -0.003,
+          "ret_sigma_mult": 1.6,
+          "shock": -0.028
+        },
+        {
+          "symbol": "MSFT",
+          "ret_mu": -0.0012,
+          "ret_sigma_mult": 1.25,
+          "shock": -0.009
+        },
+        {
+          "symbol": "GOOGL",
+          "ret_mu": -0.001,
+          "ret_sigma_mult": 1.2,
+          "shock": -0.007
+        },
+        {
+          "symbol": "AAPL",
+          "ret_mu": -0.0006,
+          "ret_sigma_mult": 1.1,
+          "shock": -0.004
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Sovereign wealth fund quietly amasses GME stake",
+    "body": "An SEC filing revealed that a Middle Eastern sovereign wealth fund purchased a 5% stake in GameStop, citing \"long-term strategic value in physical media revival.\" Nobody is sure if this is real. Reddit loses its mind.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "GME",
+          "ret_mu": 0.001,
+          "ret_sigma_mult": 2.8,
+          "shock": 0.038
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Major earthquake disrupts Taiwan semiconductor production",
+    "body": "A 7.2-magnitude earthquake near Hsinchu caused temporary fab shutdowns and power disruptions at key chipmaking facilities. Analysts expect weeks of lost output to ripple through the electronics supply chain.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "NVDA",
+          "ret_mu": -0.0022,
+          "ret_sigma_mult": 1.45,
+          "shock": -0.018
+        },
+        {
+          "symbol": "AAPL",
+          "ret_mu": -0.0018,
+          "ret_sigma_mult": 1.35,
+          "shock": -0.014
+        },
+        {
+          "symbol": "MSFT",
+          "ret_mu": -0.0008,
+          "ret_sigma_mult": 1.15,
+          "shock": -0.005
+        }
+      ]
+    }
+  },
+  {
+    "headline": "UN carbon border tax framework rattles heavy industry",
+    "body": "A landmark UN vote endorsed a carbon border adjustment mechanism targeting high-emission exporters. Industrial manufacturers face potential tariff hikes on overseas sales, while energy transition names get a modest lift.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "CAT",
+          "ret_mu": -0.0014,
+          "ret_sigma_mult": 1.25,
+          "shock": -0.01
+        },
+        {
+          "symbol": "BA",
+          "ret_mu": -0.001,
+          "ret_sigma_mult": 1.2,
+          "shock": -0.007
+        },
+        {
+          "symbol": "XOM",
+          "ret_mu": -0.002,
+          "ret_sigma_mult": 1.3,
+          "shock": -0.014
+        },
+        {
+          "symbol": "TSLA",
+          "ret_mu": 0.0012,
+          "ret_sigma_mult": 1.15,
+          "shock": 0.009
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Fed surprises markets with emergency rate cut",
+    "body": "The Federal Reserve convened an unscheduled meeting and cut rates by 50 basis points citing deteriorating credit conditions. Risk assets rallied sharply while the dollar weakened, boosting financials and consumer names.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "JPM",
+          "ret_mu": 0.0018,
+          "ret_sigma_mult": 1.3,
+          "shock": 0.014
+        },
+        {
+          "symbol": "GS",
+          "ret_mu": 0.002,
+          "ret_sigma_mult": 1.3,
+          "shock": 0.016
+        },
+        {
+          "symbol": "V",
+          "ret_mu": 0.0012,
+          "ret_sigma_mult": 1.15,
+          "shock": 0.008
+        },
+        {
+          "symbol": "WMT",
+          "ret_mu": 0.0007,
+          "ret_sigma_mult": 1.08,
+          "shock": 0.005
+        },
+        {
+          "symbol": "GME",
+          "ret_mu": 0.0,
+          "ret_sigma_mult": 1.5,
+          "shock": 0.012
+        }
+      ]
+    }
+  },
+  {
+    "headline": "BHP discovers massive copper deposit in Zambia",
+    "body": "Preliminary drilling results point to one of the largest undeveloped copper deposits found in a decade. The find comes as EV-driven copper demand forecasts push analysts to revise long-term price outlooks upward.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "BHP",
+          "ret_mu": 0.002,
+          "ret_sigma_mult": 1.25,
+          "shock": 0.016
+        },
+        {
+          "symbol": "RIO",
+          "ret_mu": 0.0008,
+          "ret_sigma_mult": 1.1,
+          "shock": 0.005
+        },
+        {
+          "symbol": "TSLA",
+          "ret_mu": 0.0006,
+          "ret_sigma_mult": 1.08,
+          "shock": 0.004
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Waymo expansion triggers Tesla FSD credibility questions",
+    "body": "Alphabet's robotaxi unit announced expansion into twelve new US cities, reigniting the debate over whether Tesla's vision-only autonomy approach can compete with lidar-based rivals. Short interest in Tesla ticked up overnight.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "TSLA",
+          "ret_mu": -0.002,
+          "ret_sigma_mult": 1.4,
+          "shock": -0.016
+        },
+        {
+          "symbol": "GOOGL",
+          "ret_mu": 0.0014,
+          "ret_sigma_mult": 1.15,
+          "shock": 0.01
+        },
+        {
+          "symbol": "NVDA",
+          "ret_mu": 0.0005,
+          "ret_sigma_mult": 1.08,
+          "shock": 0.003
+        }
+      ]
+    }
+  },
+  {
+    "headline": "McDonald's E. coli outbreak triggers nationwide recall",
+    "body": "Health authorities linked a multistate foodborne illness cluster to a popular menu item, prompting a precautionary recall across thousands of locations. Customer traffic is expected to fall sharply in the near term as the story dominates news cycles.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "MCD",
+          "ret_mu": -0.003,
+          "ret_sigma_mult": 1.5,
+          "shock": -0.026
+        },
+        {
+          "symbol": "WMT",
+          "ret_mu": 0.0008,
+          "ret_sigma_mult": 1.08,
+          "shock": 0.005
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Ransomware attack cripples JPMorgan retail banking systems",
+    "body": "A sophisticated ransomware group disrupted online and ATM services for millions of customers over a 36-hour period. Regulators have opened an inquiry and the reputational fallout adds to near-term uncertainty.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "JPM",
+          "ret_mu": -0.0025,
+          "ret_sigma_mult": 1.5,
+          "shock": -0.018
+        },
+        {
+          "symbol": "GS",
+          "ret_mu": -0.0006,
+          "ret_sigma_mult": 1.15,
+          "shock": -0.004
+        },
+        {
+          "symbol": "V",
+          "ret_mu": -0.0005,
+          "ret_sigma_mult": 1.1,
+          "shock": -0.003
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Lithium price crash hammers battery supply chain outlook",
+    "body": "Spot lithium carbonate prices fell to a five-year low as new supply from Chilean and Australian operations flooded the market. EV makers cheer lower input costs, but mining-adjacent names face significant margin pressure.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "TSLA",
+          "ret_mu": 0.0014,
+          "ret_sigma_mult": 1.15,
+          "shock": 0.01
+        },
+        {
+          "symbol": "BHP",
+          "ret_mu": -0.0014,
+          "ret_sigma_mult": 1.25,
+          "shock": -0.011
+        },
+        {
+          "symbol": "RIO",
+          "ret_mu": -0.0013,
+          "ret_sigma_mult": 1.22,
+          "shock": -0.01
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Walmart launches AI-powered personal shopping agent",
+    "body": "The retail giant unveiled an agentic AI assistant that autonomously handles grocery orders, price comparisons, and returns. Early trials show a 20% uplift in basket size, and analysts see this as a structural margin improvement story.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "WMT",
+          "ret_mu": 0.0016,
+          "ret_sigma_mult": 1.12,
+          "shock": 0.013
+        },
+        {
+          "symbol": "MSFT",
+          "ret_mu": 0.0006,
+          "ret_sigma_mult": 1.08,
+          "shock": 0.004
+        },
+        {
+          "symbol": "MCD",
+          "ret_mu": -0.0004,
+          "ret_sigma_mult": 1.05,
+          "shock": -0.002
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Viral TikTok challenge causes chaos at Walmart electronics returns",
+    "body": "A viral dare encouraging users to mass-return electronics and use the cash to buy gold bars overwhelmed Walmart loss prevention teams nationwide. While financially minor, the story triggers a short-term sentiment hit and social media frenzy.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "WMT",
+          "ret_mu": -0.0008,
+          "ret_sigma_mult": 1.2,
+          "shock": -0.007
+        },
+        {
+          "symbol": "GME",
+          "ret_mu": 0.0,
+          "ret_sigma_mult": 1.6,
+          "shock": 0.008
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Boeing Starliner crew finally returns after eight-month delay",
+    "body": "NASA astronauts splashed down safely after an extended mission caused by repeated capsule malfunctions. While the homecoming is welcome news, the program's cost overruns and reputational damage remain a long-term overhang for the defense unit.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "BA",
+          "ret_mu": 0.0008,
+          "ret_sigma_mult": 1.2,
+          "shock": 0.006
+        }
+      ]
+    }
+  },
+  {
+    "headline": "OPEC+ splinters as Saudi Arabia abandons output deal",
+    "body": "In a surprise move, Saudi Arabia announced it would no longer honour its OPEC+ production quota, choosing to maximise market share over price support. Crude futures dropped sharply on the news.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "XOM",
+          "ret_mu": -0.0022,
+          "ret_sigma_mult": 1.35,
+          "shock": -0.018
+        },
+        {
+          "symbol": "BHP",
+          "ret_mu": -0.001,
+          "ret_sigma_mult": 1.15,
+          "shock": -0.007
+        },
+        {
+          "symbol": "RIO",
+          "ret_mu": -0.0008,
+          "ret_sigma_mult": 1.12,
+          "shock": -0.005
+        },
+        {
+          "symbol": "CAT",
+          "ret_mu": -0.0005,
+          "ret_sigma_mult": 1.08,
+          "shock": -0.003
+        }
+      ]
+    }
+  },
+  {
+    "headline": "Google antitrust ruling forces Chrome browser divestiture",
+    "body": "A federal judge ordered Alphabet to divest Chrome as a remedy for its search monopoly conviction. The ruling sent shockwaves through the ad-tech ecosystem, raising questions about Google's ability to monetise its ecosystem at current levels.",
+    "effects": {
+      "stocks": [
+        {
+          "symbol": "GOOGL",
+          "ret_mu": -0.003,
+          "ret_sigma_mult": 1.55,
+          "shock": -0.025
+        },
+        {
+          "symbol": "MSFT",
+          "ret_mu": 0.0016,
+          "ret_sigma_mult": 1.18,
+          "shock": 0.011
+        },
+        {
+          "symbol": "AAPL",
+          "ret_mu": 0.0008,
+          "ret_sigma_mult": 1.1,
+          "shock": 0.005
+        }
+      ]
+    }
+  },
+  {
+    "headline": "CEO's 'Deep-Sea Living' experiment goes dark",
+    "body": "The tech visionary's attempt to lead the company from a pressurized underwater pod has hit a snag after a communications failure. Investors are spooked by the literal lack of oversight.",
+    "effects": {
+      "stocks": [
+        { "symbol": "TSLA", "ret_mu": -0.003, "ret_sigma_mult": 1.9, "shock": -0.025 },
+        { "symbol": "AAPL", "ret_mu": -0.0005, "ret_sigma_mult": 1.1, "shock": -0.002 }
+      ]
+    }
+  },
+  {
+    "headline": "Fast-food 'Fry-pocalypse' as potato blight hits",
+    "body": "A rare fungus has decimated global russet potato yields. Side-dish substitutions involving kale have sparked a massive consumer backlash and a dip in drive-thru traffic.",
+    "effects": {
+      "stocks": [
+        { "symbol": "MCD", "ret_mu": -0.0025, "ret_sigma_mult": 1.4, "shock": -0.015 },
+        { "symbol": "WMT", "ret_mu": 0.0008, "ret_sigma_mult": 1.1, "shock": 0.004 }
+      ]
+    }
+  },
+  {
+    "headline": "AI accidentally develops 'Corporate Nihilism' personality",
+    "body": "A major cloud provider's enterprise assistant began responding to all queries with 'Nothing matters in the heat death of the universe.' Clients are switching to competitors while engineers scramble for a patch.",
+    "effects": {
+      "stocks": [
+        { "symbol": "MSFT", "ret_mu": -0.0022, "ret_sigma_mult": 1.6, "shock": -0.018 },
+        { "symbol": "GOOGL", "ret_mu": 0.0015, "ret_sigma_mult": 1.2, "shock": 0.009 }
+      ]
+    }
+  },
+  {
+    "headline": "Goldman Sachs CEO's EDM set goes viral for wrong reasons",
+    "body": "A leaked video of the CEO's 'aggressive' techno remix of a quarterly earnings call has divided the financial community. Traders are baffled, but the youth demographic is weirdly engaged.",
+    "effects": {
+      "stocks": [
+        { "symbol": "GS", "ret_mu": 0.0, "ret_sigma_mult": 1.4, "shock": -0.005 },
+        { "symbol": "JPM", "ret_mu": 0.0004, "ret_sigma_mult": 1.05, "shock": 0.002 }
+      ]
+    }
+  },
+  {
+    "headline": "Iron ore found on Moon; Miners announce 'Lunar Pivot'",
+    "body": "A geological survey confirmed massive, high-grade deposits in the Sea of Tranquility. The logistical nightmare of space-freight is ignored as speculative mania takes over the sector.",
+    "effects": {
+      "stocks": [
+        { "symbol": "BHP", "ret_mu": 0.003, "ret_sigma_mult": 1.8, "shock": 0.028 },
+        { "symbol": "RIO", "ret_mu": 0.0028, "ret_sigma_mult": 1.8, "shock": 0.025 },
+        { "symbol": "BA", "ret_mu": 0.0015, "ret_sigma_mult": 1.3, "shock": 0.012 }
+      ]
+    }
+  },
+  {
+  "headline": "Nvidia CEO Jensen Huang's leather jacket sells for $2.1M at auction",
+  "body": "A charity auction of Jensen Huang's iconic jacket spiralled into a bidding war between two anonymous crypto wallets. Analysts noted zero fundamental impact but NVDA still went up 3% because sentiment is a hell of a drug.",
+  "effects": {
+    "stocks": [
+      { "symbol": "NVDA", "ret_mu": 0.0008, "ret_sigma_mult": 1.1, "shock": 0.006 }
+    ]
   }
+},
+{
+  "headline": "McDonald's Grimace Shake returns — markets price in serotonin",
+  "body": "McDonald's surprise re-release of the limited-edition Grimace Shake triggered a TikTok frenzy reminiscent of its 2023 cultural moment. Foot traffic data spiked within hours, and one sell-side analyst published a note titled 'Grimace Pilled: Upgrading to Strong Buy.'",
+  "effects": {
+    "stocks": [
+      { "symbol": "MCD", "ret_mu": 0.0014, "ret_sigma_mult": 1.15, "shock": 0.011 },
+      { "symbol": "WMT", "ret_mu": -0.0003, "ret_sigma_mult": 1.05, "shock": -0.002 }
+    ]
+  }
+},
+{
+  "headline": "Caterpillar accidentally ships 47 bulldozers to wrong continent",
+  "body": "A logistics error routed a large equipment order intended for a Canadian mining firm to a port in Namibia. CAT's logistics partner blamed 'an AI scheduling tool.' The bulldozers are fine. A rogue influencer has already started living in one.",
+  "effects": {
+    "stocks": [
+      { "symbol": "CAT", "ret_mu": -0.0007, "ret_sigma_mult": 1.2, "shock": -0.006 }
+    ]
+  }
+},
+{
+  "headline": "Warren Buffett buys GME, says it reminds him of See's Candies",
+  "body": "In a letter to Berkshire shareholders, Buffett described GameStop as 'a beloved consumer brand with durable nostalgic moat.' Nobody believes this is real. It is real. Reddit explodes. CNBC anchors visibly struggle.",
+  "effects": {
+    "stocks": [
+      { "symbol": "GME", "ret_mu": 0.002, "ret_sigma_mult": 3.8, "shock": 0.055 },
+      { "symbol": "WMT", "ret_mu": -0.0003, "ret_sigma_mult": 1.1, "shock": -0.003 }
+    ]
+  }
+},
+{
+  "headline": "Elon Musk tweets single letter 'X' — markets forced to guess",
+  "body": "At 3:17am, Musk posted the letter 'X' with no context. Within minutes, traders had variously interpreted it as a Tesla product announcement, a SpaceX milestone, a threat directed at a senator, and an Erdős–Bacon number update. Volatility spiked across the board before the tweet was revealed to be a typo.",
+  "effects": {
+    "stocks": [
+      { "symbol": "TSLA", "ret_mu": 0.0, "ret_sigma_mult": 1.9, "shock": 0.014 },
+      { "symbol": "NVDA", "ret_mu": 0.0003, "ret_sigma_mult": 1.15, "shock": 0.003 },
+      { "symbol": "GME", "ret_mu": 0.0, "ret_sigma_mult": 2.0, "shock": 0.018 }
+    ]
+  }
+}
 ]
