@@ -9,8 +9,9 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
+		<main class="container">
     <h1 id="stockTicker">Stock</h1>
-    <p><a href="/" id="backLink">Back</a></p>
+    <div class="top-row"><a href="/" id="backLink" class="back-link">← Back</a></div>
 
     <p>Welcome, <strong id="u">?</strong></p>
     <p>It is <strong id="t">-</strong></p>
@@ -29,18 +30,18 @@
       <span id="stockChange" class=""></span>
     </p>
 
-    <div id="chart" style="width: 100%; height: 360px;"></div>
+    <div class="chart-card"><div id="chart" style="width: 100%; height: 360px;"></div></div>
 
-    <div style="margin-top: 14px;">
-	<label>
+    <div class="trade">
+	<div class="row"><label>
 	  Quantity:
-	  <input id="tradeQty" type="number" min="0" step="1" value="0" style="width: 90px;" />
+	  <input id="tradeQty" type="number" min="0" step="1" value="0" />
 	</label>
-	<button id="buyBtn" type="button" style="margin-left: 8px;">Buy</button>
-	<button id="sellBtn" type="button" style="margin-left: 8px;">Sell</button>
-	<span id="tradeMsg" style="margin-left: 10px;"></span>
+	<button id="buyBtn" class="btn primary" type="button">Buy</button>
+	<button id="sellBtn" class="btn" type="button">Sell</button>
+	<span id="tradeMsg" class="msg"></span></div>
 	
-	<div style="margin-top: 8px;">
+	<div class="sub">
 	  <div>You have: <strong id="youHaveShares">-</strong></div>
 	  <div>Transaction: <strong id="txnValue">-</strong></div>
 	</div>
@@ -281,5 +282,6 @@
       setInterval(loadStock, 2000);
       setInterval(loadHistory, 5000);
     </script>
-  </body>
+  		</main>
+	</body>
 </html>

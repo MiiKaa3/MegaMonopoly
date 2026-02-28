@@ -5,22 +5,27 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1"/>
 		<title>Mega Monopoly 5</title>
 		<link rel="icon" href="/images/favicon.ico">
+		<link rel="stylesheet" href="styles.css">
 	</head>
 	<body>
+		<main class="container">
 		<h1>Mega Monopoly 5</h1>
+		<div class="center-card">
 		<p>Pick a username to join.</p>
 
-		<form method="POST" action="/register">
+		<form method="POST" action="/register" class="form-row">
 			<input
 				name="username"
 				placeholder="username"
 				autocomplete="nickname"
 				required
 			/>
-			<button>
+			<button class="btn primary" type="submit">
 				Continue
 			</button>
 		</form>
+		</div>
+			</main>
 	</body>
 </html>
 

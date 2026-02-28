@@ -8,30 +8,33 @@
 		<link rel="stylesheet" href="styles.css">
 	</head>
 	<body>
+		<main class="container">
 		<h1>Dashboard</h1>
 		<p>Welcome, <strong id="u">?</strong></p>
 		<p>It is <strong id="t">-</strong></p>
 		<p>Balance: <strong id="bal">-</strong></p>
 
 		
-		<p>Holdings: <strong id="holdingsLine">-</strong></p>
-		<p>Market value: <strong id="marketValue">-</strong></p>
-		<p>Net worth: <strong id="netWorth">-</strong></p>
+		<div class="summary-grid">
+			<p>Holdings: <strong id="holdingsLine" class="mono">-</strong></p>
+			<p>Market value: <strong id="marketValue" class="mono">-</strong></p>
+			<p>Net worth: <strong id="netWorth" class="mono">-</strong></p>
+		</div>
 		<hr>
-<button id="sendBtn" type="button">Send</button>
+<button id="sendBtn" class="btn primary" type="button">Send</button>
 
-		<div id="sendPanel" style="display:none; margin-top: 12px; padding: 12px; border: 1px solid #ccc;">
-			<p><strong>Send money</strong></p>
-			<label>
+		<div id="sendPanel" class="panel send-panel">
+			<div class="panel-title">Send money</div>
+			<div class="row"><label>
     				To:
     				<select id="sendTo"></select>
 	  		</label>
-  			<label style="margin-left: 10px;">
+  			<label>
     				Amount:
-    				<input id="sendAmt" type="number" min="1" step="1" placeholder="0" style="width: 90px;" />
+    				<input id="sendAmt" type="number" min="1" step="1" placeholder="0"  />
 	  		</label>
-  			<button id="sendConfirm" type="button" style="margin-left: 10px;">Confirm</button>
-  			<p id="sendMsg" style="margin-top: 10px;"></p>
+  			<button id="sendConfirm" class="btn" type="button">Confirm</button></div>
+  			<p id="sendMsg" class="msg"></p>
 		</div>
 
 		<div id="newsTicker" class="panel clickable" title="Open full news">
@@ -221,6 +224,7 @@
 		</div>
 
 		<script src="/populate.js"></script>
+			</main>
 	</body>
 </html>
 

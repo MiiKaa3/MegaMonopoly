@@ -1,61 +1,319 @@
-/* News ticker panel */
-.panel {
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  padding: 12px;
-  margin-top: 12px;
-  background: rgba(255, 255, 255, 0.04);
+/* Mega Monopoly 5 UI
+   A clean, modern dark theme with soft cards and readable type.
+*/
+
+:root{
+  --bg0:#070A12;
+  --bg1:#0B1220;
+  --card:rgba(255,255,255,0.06);
+  --card2:rgba(255,255,255,0.09);
+  --border:rgba(255,255,255,0.14);
+  --border2:rgba(255,255,255,0.22);
+  --text:rgba(255,255,255,0.92);
+  --muted:rgba(255,255,255,0.70);
+  --muted2:rgba(255,255,255,0.55);
+  --shadow:0 10px 30px rgba(0,0,0,0.35);
+  --radius:14px;
+  --radius-sm:10px;
+  --pad:14px;
+  --mono:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --sans:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
 }
 
-.clickable {
-  cursor: pointer;
+*{ box-sizing:border-box; }
+html, body{ height:100%; }
+body{
+  margin:0;
+  font-family:var(--sans);
+  color:var(--text);
+  background:
+    radial-gradient(1100px 700px at 10% -10%, rgba(118, 141, 255, 0.20), transparent 55%),
+    radial-gradient(900px 600px at 90% 0%, rgba(90, 255, 201, 0.14), transparent 55%),
+    radial-gradient(900px 700px at 40% 120%, rgba(255, 177, 66, 0.11), transparent 60%),
+    linear-gradient(180deg, var(--bg0), var(--bg1));
 }
 
-.panel-title {
-  font-size: 0.9rem;
-  opacity: 0.85;
-  margin-bottom: 8px;
+.container{
+  width:min(980px, calc(100% - 28px));
+  margin: 22px auto 40px;
 }
 
-.ticker-viewport {
-  height: 42px;               
-  overflow: hidden;
-  border-radius: 8px;
+h1{
+  margin: 0 0 10px;
+  font-size: 1.65rem;
+  letter-spacing: 0.2px;
+}
+
+p{ margin: 8px 0; color: var(--muted); }
+strong{ color: var(--text); }
+hr{
+  border: none;
+  height: 1px;
+  margin: 14px 0;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
+
+a{
+  color: rgba(160, 205, 255, 0.95);
+  text-decoration: none;
+}
+a:hover{ text-decoration: underline; }
+
+/* Small top row (Back link, etc.) */
+.top-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  justify-content:space-between;
+  margin: 6px 0 12px;
+}
+.top-row .back-link{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
   padding: 8px 10px;
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  display: flex;
-  align-items: center;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+}
+.top-row .back-link:hover{
+  background: rgba(255,255,255,0.09);
+  text-decoration:none;
 }
 
-.ticker-inner {
+/* Controls */
+.btn{
+  appearance:none;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.07);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 650;
+  letter-spacing: 0.15px;
+  cursor:pointer;
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+  transition: transform 80ms ease, background 120ms ease, border-color 120ms ease;
+}
+.btn:hover{
+  background: rgba(255,255,255,0.10);
+  border-color: var(--border2);
+}
+.btn:active{ transform: translateY(1px); }
+
+.btn.primary{
+  border-color: rgba(160,205,255,0.40);
+  background: rgba(160,205,255,0.14);
+}
+.btn.primary:hover{
+  background: rgba(160,205,255,0.18);
+  border-color: rgba(160,205,255,0.60);
+}
+
+input, select{
+  background: rgba(0,0,0,0.25);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  outline: none;
+  font-size: 0.98rem;
+}
+input::placeholder{ color: rgba(255,255,255,0.40); }
+input:focus, select:focus{
+  border-color: rgba(160,205,255,0.55);
+  box-shadow: 0 0 0 3px rgba(160,205,255,0.18);
+}
+
+label{
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* Panel cards */
+.panel{
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--pad);
+  margin-top: 12px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+.panel-title{
+  font-size: 0.9rem;
+  color: var(--muted2);
+  margin-bottom: 10px;
+  letter-spacing: 0.2px;
+}
+
+.clickable{ cursor: pointer; }
+.clickable:hover{ border-color: var(--border2); background: rgba(255,255,255,0.075); }
+
+/* Ticker */
+.ticker-viewport{
+  height: 46px;
+  overflow: hidden;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: rgba(0,0,0,0.28);
+  border: 1px solid rgba(255,255,255,0.10);
+  display:flex;
+  align-items:center;
+}
+.ticker-inner{
   white-space: nowrap;
   will-change: transform;
+  font-size: 0.98rem;
+  color: rgba(255,255,255,0.90);
+}
+.ticker-item{
+  display:inline-block;
+  padding-right: 30px;
+}
+
+/* Quick summary lines */
+.summary-grid{
+  display:grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+.summary-grid p{
+  margin: 0;
+}
+.summary-grid .mono{
+  font-family: var(--mono);
+  color: var(--text);
+}
+
+/* Send panel */
+.send-panel{
+  margin-top: 12px;
+  display:none;
+}
+.send-panel .row{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 10px;
+  align-items:end;
+}
+.send-panel .row .spacer{
+  flex:1;
+}
+.send-panel .msg{
+  margin-top: 10px;
+  min-height: 18px;
+}
+
+/* Stock market list */
+.stock-market{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+@media (max-width: 760px){
+  .stock-market{ grid-template-columns: 1fr; }
+}
+
+.industry{
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  background: rgba(255,255,255,0.05);
+}
+.industry-title{
+  font-weight: 750;
+  margin-bottom: 10px;
+  letter-spacing: 0.25px;
+  color: rgba(255,255,255,0.88);
+}
+
+.stock{
+  padding: 10px 10px;
+  border-radius: 12px;
+  background: transparent;
+}
+.stock + .stock{
+  border-top: 1px solid rgba(255,255,255,0.10);
+  margin-top: 10px;
+  padding-top: 14px;
+  border-radius: 0;
+}
+.stock:hover{ background: rgba(255,255,255,0.04); }
+
+.stock-row{
+  display:flex;
+  gap: 10px;
+  align-items: baseline;
+  font-family: var(--mono);
   font-size: 0.95rem;
-  opacity: 0.95;
 }
+.stock-change{ min-width: 76px; }
+.stock-price{ min-width: 88px; }
+.stock-ticker{ font-weight: 800; letter-spacing: 0.5px; }
+.stock-name{ margin-top: 6px; color: var(--muted2); }
 
-.ticker-item {
-  display: inline-block;
-  padding-right: 28px;        
-}
-
+/* Up/down */
+.up{ color: #4BE38A; }
+.down{ color: #FF5D6C; }
 
 /* News feed */
-.news-card { }
-.news-headline { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
-.news-meta { font-size: 0.85rem; opacity: 0.8; margin-bottom: 10px; }
-.news-body { line-height: 1.35; opacity: 0.95; }
+.news-card{ }
+.news-headline{
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+  color: rgba(255,255,255,0.92);
+}
+.news-meta{
+  font-size: 0.85rem;
+  color: var(--muted2);
+  margin-bottom: 10px;
+}
+.news-body{
+  line-height: 1.45;
+  color: rgba(255,255,255,0.86);
+}
 
-.stock-market { display: grid; gap: 14px; }
-.industry { border: 1px solid #ddd; border-radius: 10px; padding: 12px; }
-.industry-title { font-weight: 700; margin-bottom: 10px; }
-.stock { padding: 8px 10px; border-radius: 8px; }
-.stock + .stock { border-top: 1px solid #eee; margin-top: 8px; padding-top: 12px; }
-.stock-row { display: flex; gap: 10px; align-items: baseline; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-.stock-change { min-width: 70px; }
-.stock-price { min-width: 80px; }
-.stock-ticker { font-weight: 700; }
-.stock-name { margin-top: 4px; opacity: 0.85; }
-.up { color: #0a7a2f; }
-.down { color: #b00020; }
+/* Stock page trading */
+.trade{
+  margin-top: 14px;
+}
+.trade .row{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 10px;
+  align-items:center;
+}
+.trade .sub{
+  margin-top: 10px;
+  color: var(--muted);
+}
+.trade .msg{
+  font-weight: 650;
+}
+
+/* Chart container (Plotly inherits background poorly, so give it a card) */
+.chart-card{
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+  padding: 10px;
+  box-shadow: var(--shadow);
+}
+
+/* Index page */
+.center-card{
+  border: 1px solid var(--border);
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+.form-row{
+  display:flex;
+  gap: 10px;
+  flex-wrap:wrap;
+  margin-top: 10px;
+}

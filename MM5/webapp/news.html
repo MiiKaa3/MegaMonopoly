@@ -8,10 +8,11 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
+		<main class="container">
     <h1>News</h1>
-    <p><a href="/" id="backLink">Back</a></p>
+    <div class="top-row"><a href="/" id="backLink" class="back-link">← Back</a></div>
 
-    <div id="newsFeed"></div>
+    <div id="newsFeed" class="news-feed"></div>
 
     <script>
       function formatTime(t) {
@@ -63,5 +64,6 @@
       loadNews();
       setInterval(loadNews, 5000);
     </script>
-  </body>
+  		</main>
+	</body>
 </html>
